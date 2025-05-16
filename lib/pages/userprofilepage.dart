@@ -21,7 +21,6 @@ class _UsePprofilePageState extends State<UserProfilePage> {
             style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
-          leading: IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back_ios)),
         ),
       ),
     );

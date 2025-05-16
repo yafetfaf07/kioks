@@ -25,10 +25,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             ),
           ),
           centerTitle: true,
-          leading: IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.arrow_back_ios),
-          ),
+      
         ),
         body: Padding(
           padding: EdgeInsets.only(top: 15),
