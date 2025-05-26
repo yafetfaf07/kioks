@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_project/pages/kiokspage.dart';
+import 'package:flutter_project/pages/user-page/kiokspage.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class KioksCard extends StatelessWidget {
-  const KioksCard({super.key});
+  final String name;
+  final String rating;
+  
+  const   KioksCard({super.key, required this.name, required this.rating});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +42,7 @@ class KioksCard extends StatelessWidget {
                       padding: EdgeInsets.only(top: 5),
                       margin: EdgeInsets.only(left: 10),
                       child: Text(
-                        'Shemsu suk',
+                        name,
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -50,7 +53,7 @@ class KioksCard extends StatelessWidget {
                     Row(
                       children: [
                         Icon(Icons.star, color: Colors.orange.shade500,),
-                        Text('5.0'),
+                        Text(rating),
                       ],
                     ),
                   ],
