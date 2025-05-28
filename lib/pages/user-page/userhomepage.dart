@@ -19,54 +19,58 @@ class UserHomepage extends StatefulWidget {
 }
 
 class _UserHomepageState extends State<UserHomepage> {
+  bool isFetching = true;
 
-// This is for getting users location for desktop application
+  // This is for getting users location for desktop application
   Future<void> getLocationFromIP() async {
-  final response = await http.get(Uri.parse('http://ip-api.com/json/'));
+    final response = await http.get(Uri.parse('http://ip-api.com/json/'));
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    final latitude = data['lat'];
-    final longitude = data['lon'];
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final latitude = data['lat'];
+      final longitude = data['lon'];
 
-    // Pass this to OpenStreetMap
-    print('Latitude: $latitude, Longitude: $longitude');
-  } else {
-    print('Failed to get location');
+      // Pass this to OpenStreetMap
+      print('Latitude: $latitude, Longitude: $longitude');
+    } else {
+      print('Failed to get location');
+    }
   }
-}
 
   List<dynamic> getMerchantData = [];
-Future<void> getAllMerchants() async {
-  final MerchantUrl = Uri.parse("http://localhost:5000/api/merchant/getAllMerchant");
+  Future<void> getAllMerchants(String merchants) async {
+    var MerchantUrl = Uri.parse(merchants);
 
-  final response = await http.get(MerchantUrl, headers: {"Content-Type":"application/json"});
-  if(response.statusCode==200) {
-    print(response.body);
-  List<dynamic> merchantResponse = json.decode(response.body);
-  setState(() {
-    getMerchantData.addAll(merchantResponse);
-  });
-
+    final response = await http.get(
+      MerchantUrl,
+      headers: {"Content-Type": "application/json"},
+    );
+    if (response.statusCode == 200) {
+      print(" Response Body: ${response.body}");
+      List<dynamic> merchantResponse = json.decode(response.body);
+      setState(() {
+        getMerchantData.clear(); // Clear previous data to avoid duplicates
+        getMerchantData.addAll(merchantResponse);
+        isFetching = false;
+      });
+    } else {
+      print("Error Response: ${response.body}");
+    }
   }
 
-
-}
-
-@override
+  @override
   void initState() {
     super.initState();
     // This for telling flutter to render components first before fetching any data from the API
-       WidgetsBinding.instance.addPostFrameCallback((_) {
-        getLocationFromIP();
-      getAllMerchants();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getAllMerchants("http://localhost:5000/api/merchant/getAllMerchant/");
+      getLocationFromIP();
     });
-
   }
-
 
   @override
   Widget build(BuildContext context) {
+    print("please: ${getMerchantData}");
     return DefaultTabController(
       length: 4,
       child: Scaffold(
@@ -119,9 +123,17 @@ Future<void> getAllMerchants() async {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  GestureDetector(child: CategoryCards(), onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (builder) => Categorypage()));
-                  },),
+                  GestureDetector(
+                    child: CategoryCards(),
+                    onTap: () {
+                      getAllMerchants(
+                        "http://localhost:5000/api/product/getProductByCategory/Fruits",
+                      );
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(builder: (builder) => Categorypage()),
+                      // );
+                    },
+                  ),
                   const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.only(left: 10.0),
@@ -134,21 +146,28 @@ Future<void> getAllMerchants() async {
                     ),
                   ),
                   const SizedBox(height: 10),
-                 getMerchantData.length>0 ? Expanded(
-                  child: ListView.builder(itemCount: getMerchantData.length,itemBuilder: (BuildContext context, int index) {
-                    String rating;
-                    if(getMerchantData[index]['overallRating']==null) {
-                      rating=0.toString();
-                    } 
-                    else {
-                      rating=getMerchantData[index]['overallRating'].toString();
-                    }
-                    return KioksCard(
-                      name: getMerchantData[index]['firstname'],
-                      rating: rating,
-                    );
-                  }),
-                  ): Center(child: Text("No Shops Available")),
+                  isFetching
+                      ? CircularProgressIndicator()
+                      : Expanded(
+                        child: ListView.builder(
+                          itemCount: getMerchantData.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            String rating;
+                            if (getMerchantData[index]['overallRating'] ==
+                                null) {
+                              rating = 0.toString();
+                            } else {
+                              rating =
+                                  getMerchantData[index]['overallRating']
+                                      .toString();
+                            }
+                            return KioksCard(
+                              name: getMerchantData[index]['firstname'],
+                              rating: rating,
+                            );
+                          },
+                        ),
+                      ),
                 ],
               ),
               CartPage(),
@@ -157,12 +176,31 @@ Future<void> getAllMerchants() async {
             ],
           ),
         ),
-        bottomNavigationBar: const TabBar(
+        bottomNavigationBar: TabBar(
+          onTap: (index) {
+            if (index == 0) {
+              getAllMerchants(
+                "http://localhost:5000/api/merchant/getAllMerchant/",
+              );
+            }
+          },
           tabs: [
-            Tab(icon: Icon(Icons.home, color: Colors.green, size: 30,)),
-            Tab(icon: Icon(Icons.shopping_cart_outlined, color: Colors.green, size: 30,)),
-            Tab(icon: Icon(Icons.article, color: Colors.green, size: 30,),),
-            Tab(icon: Icon(Icons.account_circle_rounded, color: Colors.green, size: 30,),)
+            Tab(icon: Icon(Icons.home, color: Colors.green, size: 30)),
+            Tab(
+              icon: Icon(
+                Icons.shopping_cart_outlined,
+                color: Colors.green,
+                size: 30,
+              ),
+            ),
+            Tab(icon: Icon(Icons.article, color: Colors.green, size: 30)),
+            Tab(
+              icon: Icon(
+                Icons.account_circle_rounded,
+                color: Colors.green,
+                size: 30,
+              ),
+            ),
           ],
         ),
       ),
