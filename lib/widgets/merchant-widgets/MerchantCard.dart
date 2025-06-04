@@ -1,52 +1,72 @@
 import 'package:flutter/material.dart';
 
-class Merchantcard extends StatelessWidget {
-  const Merchantcard({super.key});
+class MerchantCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final String? trend;
+  final IconData icon;
+
+  const MerchantCard({
+    super.key,
+    required this.title,
+    required this.value,
+    this.trend,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-
-      width: 500,
-      margin: EdgeInsets.only(top: 20),
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(width: 1, color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(12.0),
+        boxShadow: [
+          BoxShadow(color: Colors.grey, spreadRadius: 1, blurRadius: 1),
+        ],
       ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Total Products",
-                  style: TextStyle(fontWeight:FontWeight.w400, fontSize: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Icon(icon, color: Colors.grey[400], size: 20),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.production_quantity_limits,
-                  color: Colors.blue,
-                  size: 30,
+              if (trend != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  trend!,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                '5',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

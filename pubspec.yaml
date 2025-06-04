@@ -72,6 +72,8 @@ flutter:
     - assets/categoriesimage/eggs.png
     - assets/categoriesimage/fruits.png
     - assets/categoriesimage/vegetables.png
+    - assets/categoriesimage/headphones.jpg
+    - assets/categoriesimage/tshirt.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
