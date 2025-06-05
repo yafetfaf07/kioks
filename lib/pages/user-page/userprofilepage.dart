@@ -14,14 +14,7 @@ class _UsePprofilePageState extends State<UserProfilePage> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: Text(
-            'Profile',
-            style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-        ),
+    
       ),
     );
   }

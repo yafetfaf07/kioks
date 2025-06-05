@@ -3,16 +3,16 @@ import 'package:flutter_project/pages/user-page/kiokspage.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class KioksCard extends StatelessWidget {
-  final String name;
-  final String rating;
-  
-  const   KioksCard({super.key, required this.name, required this.rating});
+final String id;
+final String name;
+final double rating;
+  const   KioksCard({super.key, required this.id, required this.name, required this.rating});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (builder) => KioksPage()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (builder) => KioksPage(id: id,name: name,)));
       },
       child: Card(
         // width: double.infinity,
@@ -53,7 +53,7 @@ class KioksCard extends StatelessWidget {
                     Row(
                       children: [
                         Icon(Icons.star, color: Colors.orange.shade500,),
-                        Text(rating),
+                        Text(rating.toString()),
                       ],
                     ),
                   ],

@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_project/pages/user-page/userloginpage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import "package:http/http.dart" as http;
 
 class UserSignUppage extends StatefulWidget {
   const UserSignUppage({super.key});
@@ -17,6 +20,45 @@ class _UserSignUppageState extends State<UserSignUppage> {
   final TextEditingController _signupPasswordtext = TextEditingController();
   bool isChecked = false;
 
+  Future<void> createUser() async {
+    final response = await http.get(Uri.parse('http://ip-api.com/json/'));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final latitude = data['lat'];
+      final longitude = data['lon'];
+
+      final url = Uri.parse("http://localhost:5000/api/users/signup");
+      final userBody = {
+        "firstname": _firstnametext.text,
+        "lastname": _lastnametext.text,
+        "phone_no": _phonenumber.text,
+        'password': _signupPasswordtext.text,
+        "address": {"latitude": latitude, "longitude": longitude},
+      };
+
+      try {
+        final responses = await http.post(
+          url,
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(userBody),
+        );
+        if (responses.statusCode == 201) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(backgroundColor: Colors.green,content: Text("Sign up successful")));
+        }
+        else if(responses.statusCode==409) {
+          var errorMessage=jsonDecode(responses.body);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Colors.red,content: Text(errorMessage['error'])));
+          
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    }
+    ;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +69,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 15,),
+                const SizedBox(height: 15),
                 Text(
                   'Sign Up',
                   style: GoogleFonts.poppins(
@@ -52,7 +94,10 @@ class _UserSignUppageState extends State<UserSignUppage> {
                       SizedBox(height: 40),
                       Text(
                         ' First Name',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
                         textAlign: TextAlign.left,
                       ),
                       const SizedBox(height: 5),
@@ -62,7 +107,10 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           return null;
                         },
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 15 ),
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 18,
+                            horizontal: 15,
+                          ),
                           hintText: 'Enter your first name',
                           hintStyle: TextStyle(color: Colors.grey.shade600),
                           border: OutlineInputBorder(
@@ -84,7 +132,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                             borderSide: BorderSide(
                               color: Colors.green.shade500,
                               width: 2,
-                            ), 
+                            ),
                           ),
                           filled: true,
                           fillColor: Colors.white,
@@ -105,9 +153,12 @@ class _UserSignUppageState extends State<UserSignUppage> {
                         validator: (value) {
                           return null;
                         },
-                      
+
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 15 ),
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 18,
+                            horizontal: 15,
+                          ),
                           hintText: 'Enter your last name',
                           hintStyle: TextStyle(color: Colors.grey.shade600),
                           border: OutlineInputBorder(
@@ -129,7 +180,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                             borderSide: BorderSide(
                               color: Colors.green.shade500,
                               width: 2,
-                            ), 
+                            ),
                           ),
                           filled: true,
                           fillColor: Colors.white,
@@ -150,34 +201,37 @@ class _UserSignUppageState extends State<UserSignUppage> {
                         validator: (value) {
                           return null;
                         },
-                         decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 15 ),
-                        hintText: 'Enter your phone number',
-                        hintStyle: TextStyle(color: Colors.grey.shade600),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.white,
-                            width: 1,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 18,
+                            horizontal: 15,
                           ),
+                          hintText: 'Enter your phone number',
+                          hintStyle: TextStyle(color: Colors.grey.shade600),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.white,
+                              width: 1,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.grey.shade300,
+                              width: 2,
+                            ), // Border when enabled
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.green.shade500,
+                              width: 2,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.grey.shade300,
-                            width: 2,
-                          ), // Border when enabled
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.green.shade500,
-                            width: 2,
-                          ), 
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
                         keyboardType: TextInputType.phone,
                       ),
                       const SizedBox(height: 25),
@@ -194,8 +248,11 @@ class _UserSignUppageState extends State<UserSignUppage> {
                         validator: (value) {
                           return null;
                         },
-                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 15 ),
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 18,
+                            horizontal: 15,
+                          ),
                           hintText: 'Enter your password',
                           hintStyle: TextStyle(color: Colors.grey.shade600),
                           border: OutlineInputBorder(
@@ -217,7 +274,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                             borderSide: BorderSide(
                               color: Colors.green.shade500,
                               width: 2,
-                            ), 
+                            ),
                           ),
                           filled: true,
                           fillColor: Colors.white,
@@ -247,7 +304,9 @@ class _UserSignUppageState extends State<UserSignUppage> {
                         widthFactor: 0.98,
 
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            createUser();
+                          },
                           style: ElevatedButton.styleFrom(
                             alignment: Alignment.center,
                             padding: EdgeInsets.symmetric(
@@ -272,32 +331,34 @@ class _UserSignUppageState extends State<UserSignUppage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10,),
+                const SizedBox(height: 10),
                 Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text('Already have an account?'),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (builder) => UserLoginpage()),
-                      );
-                    },
-                    style: TextButton.styleFrom(
-                        padding: EdgeInsets.fromLTRB(0, 2, 10, 4)
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('Already have an account?'),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (builder) => UserLoginpage(),
+                          ),
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.fromLTRB(0, 2, 10, 4),
                       ),
-                    child: Text(
-                      'Log In',
-                      style: GoogleFonts.poppins(
-                        color: Colors.blue,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                      child: Text(
+                        'Log In',
+                        style: GoogleFonts.poppins(
+                          color: Colors.blue,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
               ],
             ),
           ),

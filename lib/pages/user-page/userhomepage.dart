@@ -12,7 +12,8 @@ import 'package:flutter_project/widgets/user-widgets/kioks-card.dart';
 import "package:http/http.dart" as http;
 
 class UserHomepage extends StatefulWidget {
-  const UserHomepage({super.key});
+  final String id;
+  const UserHomepage({super.key, required this.id});
 
   @override
   State<UserHomepage> createState() => _UserHomepageState();
@@ -39,15 +40,15 @@ class _UserHomepageState extends State<UserHomepage> {
 
   List<dynamic> getMerchantData = [];
   Future<void> getAllMerchants(String merchants) async {
-    var MerchantUrl = Uri.parse(merchants);
+    var merchantUrl = Uri.parse(merchants);
 
     final response = await http.get(
-      MerchantUrl,
+      merchantUrl,
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
-      print(" Response Body: ${response.body}");
       List<dynamic> merchantResponse = json.decode(response.body);
+      print(response.body);
       setState(() {
         getMerchantData.clear(); // Clear previous data to avoid duplicates
         getMerchantData.addAll(merchantResponse);
@@ -64,13 +65,12 @@ class _UserHomepageState extends State<UserHomepage> {
     // This for telling flutter to render components first before fetching any data from the API
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getAllMerchants("http://localhost:5000/api/merchant/getAllMerchant/");
-      getLocationFromIP();
+      // getLocationFromIP();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    print("please: ${getMerchantData}");
     return DefaultTabController(
       length: 4,
       child: Scaffold(
@@ -155,15 +155,16 @@ class _UserHomepageState extends State<UserHomepage> {
                             String rating;
                             if (getMerchantData[index]['overallRating'] ==
                                 null) {
-                              rating = 0.toString();
+                              rating = 0.0.toString();
                             } else {
                               rating =
                                   getMerchantData[index]['overallRating']
                                       .toString();
                             }
                             return KioksCard(
+                              id:getMerchantData[index]['_id'],
                               name: getMerchantData[index]['firstname'],
-                              rating: rating,
+                              rating: getMerchantData[index]['overallRating']+.0,
                             );
                           },
                         ),
