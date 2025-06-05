@@ -118,7 +118,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 68, 136, 111),
+
+       
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -259,6 +260,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ],
           ),
         ),
+
+        backgroundColor: Colors.white,
+    
+
       ),
     );
   }

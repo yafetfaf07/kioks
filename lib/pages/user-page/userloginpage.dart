@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_project/pages/user-page/userhomepage.dart';
 import 'package:flutter_project/pages/user-page/usersignuppage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import "package:http/http.dart" as http;
 
 class UserLoginpage extends StatefulWidget {
   const UserLoginpage({super.key});
@@ -13,7 +17,28 @@ class _UserLoginpageState extends State<UserLoginpage> {
   final GlobalKey<FormState> _loginFormkey = GlobalKey<FormState>();
   final TextEditingController _phonenumbertext = TextEditingController();
   final TextEditingController _passwordtext = TextEditingController();
+Future<void> loginUser (String phoneNo, String password) async {
+String url = "http://localhost:5000/api/users/login/$phoneNo/$password";
 
+final loginUrl = Uri.parse(url);
+try {
+final response = await http.get(loginUrl, headers: {"Content-Type":'application/json'} );
+  var responseBody = jsonDecode(response.body);
+
+if(response.statusCode==200) {
+  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(backgroundColor: Colors.greenAccent,content: Text('Login Successful')));
+
+  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserHomepage(id: responseBody['_id'])));
+}
+else if(response.statusCode==404) {
+  ScaffoldMessenger.of(context).showSnackBar( SnackBar(backgroundColor: Colors.red,content: Text(responseBody['error'])));
+}
+}
+catch(error) {
+print("Error: $error");
+}
+
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -140,7 +165,9 @@ class _UserLoginpageState extends State<UserLoginpage> {
                         widthFactor: 0.99,
             
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            loginUser(_phonenumbertext.text, _passwordtext.text);
+                          },
                           style: ElevatedButton.styleFrom(
                             alignment: Alignment.center,
                             padding: EdgeInsets.symmetric(
@@ -173,9 +200,7 @@ class _UserLoginpageState extends State<UserLoginpage> {
                     Text('Don\'t have an account?'),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (builder) => UserSignUppage()),
-                        );
+                        Navigator.of(context).pop();
                       },
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.fromLTRB(2, 2, 3, 4)

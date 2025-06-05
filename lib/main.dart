@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_project/pages/user-page/userhomepage.dart';
+import 'package:flutter_project/pages/user-page/usersignuppage.dart';
 
 void main() {
   runApp( MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: UserHomepage(),
+    home: UserSignUppage(),
   ));
 }
 
