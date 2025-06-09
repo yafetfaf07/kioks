@@ -14,7 +14,6 @@ class KioksShopItem extends StatelessWidget {
       child: SizedBox(
         // height: 250,
         // width: 160,
-
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -22,7 +21,7 @@ class KioksShopItem extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.asset(
-                '/categoriesimage/potato.jpeg',
+                '/categoriesimage/vegetables.png',
                 height: 120,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -34,6 +33,7 @@ class KioksShopItem extends StatelessWidget {
               padding: const EdgeInsets.only(left: 5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'Fresh Carrot',
@@ -42,7 +42,6 @@ class KioksShopItem extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 4),
                   RichText(
                     text: TextSpan(
                       children: [
@@ -81,8 +80,7 @@ class KioksShopItem extends StatelessWidget {
                   ),
                   child: IconButton(
                     icon: Icon(Icons.add, color: Colors.green),
-                    onPressed: () {
-                    },
+                    onPressed: () {},
                   ),
                 ),
               ),
