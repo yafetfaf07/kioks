@@ -24,9 +24,10 @@ final loginUrl = Uri.parse(url);
 try {
 final response = await http.get(loginUrl, headers: {"Content-Type":'application/json'} );
   var responseBody = jsonDecode(response.body);
+  print(" Get the user id: ${responseBody}");
 
 if(response.statusCode==200) {
-  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(backgroundColor: Colors.greenAccent,content: Text('Login Successful')));
+  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(backgroundColor: Colors.green,content: Text('Login Successful')));
 
   Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserHomepage(id: responseBody['_id'])));
 }

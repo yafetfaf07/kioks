@@ -8,9 +8,12 @@ class KioksShopItem extends StatelessWidget {
   final String category;
   final int price;
   final int quantity;
-
+  final int changedQuantity;
+  final VoidCallback providers;
   const KioksShopItem({
     super.key,
+    required this.providers,
+    required this.changedQuantity,
     required this.id,
     required this.name,
     required this.imageUrl,
@@ -36,7 +39,7 @@ class KioksShopItem extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
-                "http://localhost:5000/"+imageUrl,
+                "http://localhost:5000/" + imageUrl,
                 height: 120,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -95,7 +98,10 @@ class KioksShopItem extends StatelessWidget {
                   ),
                   child: IconButton(
                     icon: Icon(Icons.add, color: Colors.green),
-                    onPressed: () {},
+                    onPressed: () {
+                      print("Is it being clicked");
+                      providers();
+                    },
                   ),
                 ),
               ),

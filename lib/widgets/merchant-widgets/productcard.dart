@@ -4,24 +4,20 @@ class ProductCard extends StatelessWidget {
   final String imageUrl;
   final String name;
   final String category;
-  final String description;
-  final double price;
+  final int price;
   final int quantity;
-  final int sold;
-  final double totalRevenue;
-  final bool isActive;
+  final int totalRevenue;
+  final int changedQuantity;
 
   const ProductCard({
     super.key,
     required this.imageUrl,
     required this.name,
     required this.category,
-    required this.description,
     required this.price,
     required this.quantity,
-    required this.sold,
     required this.totalRevenue,
-    required this.isActive,
+    required this.changedQuantity
   });
 
   @override
@@ -57,8 +53,8 @@ class ProductCard extends StatelessWidget {
                             borderRadius: BorderRadius.vertical(
                               top: Radius.circular(12.0),
                             ),
-                            child: Image.asset(
-                              imageUrl,
+                            child: Image.network(
+                              "http://localhost:5000/$imageUrl",
                               fit: BoxFit.cover,
                               errorBuilder:
                                   (context, error, stackTrace) => Center(
@@ -84,11 +80,11 @@ class ProductCard extends StatelessWidget {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                     decoration: BoxDecoration(
-                      color: isActive ? Colors.black : Colors.redAccent,
+                      color: changedQuantity>0 ? Colors.black : Colors.redAccent,
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                     child:
-                        isActive
+                        changedQuantity>0
                             ? Text(
                               'Active',
                               style: TextStyle(
@@ -133,12 +129,7 @@ class ProductCard extends StatelessWidget {
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                   SizedBox(height: 8),
-                  Text(
-                    description,
-                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+           
                   SizedBox(height: 12),
 
                   const Spacer(),
@@ -156,7 +147,7 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Qty: $quantity',
+                        'Qty: ${quantity - changedQuantity}',
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                     ],
@@ -168,7 +159,7 @@ class ProductCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Sold: $sold',
+                        'Sold: $changedQuantity',
                         style: TextStyle(fontSize: 14, color: Colors.black),
                       ),
                       Text(
@@ -186,7 +177,7 @@ class ProductCard extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4.0),
                     child: LinearProgressIndicator(
-                      value: quantity > 0 ? sold / quantity : 0,
+                      value: quantity > 0 ? changedQuantity / quantity : 0,
                       backgroundColor: Colors.grey[300],
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
                       minHeight: 7, // Reduced height

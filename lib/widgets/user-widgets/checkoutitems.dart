@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CheckOutItems extends StatelessWidget {
-  const CheckOutItems({super.key});
+  final String id;
+  final int price;
+  final String name;
+  const CheckOutItems({super.key, required this.id, required this.price, required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +18,7 @@ class CheckOutItems extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Fresh potatoes',
+                  name,
                   style: GoogleFonts.poppins(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -40,7 +43,7 @@ class CheckOutItems extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '180',
+                  price.toString(),
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w600,
                     color: Colors.green.shade500,

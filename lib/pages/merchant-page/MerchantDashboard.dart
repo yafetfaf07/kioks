@@ -1,6 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/models/Product.dart';
 import 'package:flutter_project/widgets/merchant-widgets/productcard.dart';
 import 'package:flutter_project/widgets/merchant-widgets/MerchantCard.dart';
+import "package:http/http.dart" as http;
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 
 class MerchantDashboard extends StatefulWidget {
   const MerchantDashboard({super.key});
@@ -10,78 +18,153 @@ class MerchantDashboard extends StatefulWidget {
 }
 
 class _MerchantDashboardState extends State<MerchantDashboard> {
-  //exmaple list of products from server
-  List products = [
-    {
-      "imageUrl": 'assets/categoriesimage/headphones.jpg',
-      "name": "Wireless headphones",
-      "category": "Electronics",
-      "description": "High-quality wireless headphones with noise cancellation",
-      "price": 99.99,
-      "quantity": 45,
-      "sold": 23,
-      "totalRevenue": 2299.77,
-      "isActive": false,
+late File selectedFile;
+
+// This is for picking files
+Future<void> pickFile() async {
+  FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+  if(result!=null && result.files.single.path!=null) {
+    setState(() {
+      selectedFile=File(result.files.single.path!);
+    });
+  }
+}
+
+Future<void> uploadProduct() async {
+  // if(selectedFile==null) return;
+  final url = Uri.parse("http://localhost:5000/api/product/create/68430c59fb8f85b000da31af");
+  var request = http.MultipartRequest("POST", url);
+  final mimeType =
+        lookupMimeType(selectedFile!.path) ?? 'application/octet-stream';
+    final mimeParts = mimeType.split('/');
+
+
+     request.files.add(
+      await http.MultipartFile.fromPath(
+        'file', // Change this if your API expects a different field name
+        selectedFile!.path,
+        contentType: MediaType(mimeParts[0], mimeParts[1]),
+      ),
+    );
+
+      request.fields['name'] = name.text;
+    request.fields['price'] = price.text;
+    request.fields['category'] = category.text;
+    request.fields['quantity'] = quantity.text;
+    request.fields['changedQuantity']=quantity.text;
+}
+
+
+List<Product> getProducts=[];
+Future<void> getAllProductsByMerchantId() async {
+  final url = Uri.parse("http://localhost:5000/api/product/getProductByMerchantId/68430c59fb8f85b000da31af");
+  final response = await http.get(url, headers: {"Content-Type":"application/json"});
+
+  if(response.statusCode==200) {
+    List<dynamic> productResponse = json.decode(response.body);
+    setState(() {
+      getProducts.clear();
+      getProducts=productResponse.map((d) => Product.fromJson(d)).toList();
+    });
+  }
+  else {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error Response: ${response.body}")));
+  }
+}
+  TextEditingController name = TextEditingController();
+    TextEditingController price = TextEditingController();
+  TextEditingController category = TextEditingController();
+  TextEditingController quantity = TextEditingController();
+
+void showDialogs(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Add New Product"),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,  // Important to avoid infinite height
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Upload a new to your inventory. Fill in all the required details"),
+              SizedBox(height: 8),
+              Text("Product Name"),
+              TextField(
+                controller: name,
+              ),
+              SizedBox(height: 8),
+              Text("Category"),
+              TextField(
+                controller: category,
+              ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Price (\$) "),
+                        TextField(
+                          controller: price,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Quantity"),
+                        TextField(
+                          controller: quantity,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  pickFile();
+                },
+                child: Text("Upload Product Image"),
+              ),
+              SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () {
+                  uploadProduct();
+                },
+                child: Text("Add Product"),
+              ),
+            ],
+          ),
+        ),
+      );
     },
-    {
-      "imageUrl": 'assets/categoriesimage/tshirt.png',
-      "name": "tshirt",
-      "category": "clothes",
-      "description": "High-quality cotton tshirt",
-      "price": 5.99,
-      "quantity": 450,
-      "sold": 23,
-      "totalRevenue": 2299.77,
-      "isActive": true,
-    },
-    {
-      "imageUrl": 'assets/categoriesimage/headphones.jpg',
-      "name": "headphones",
-      "category": "Electronics",
-      "description": "High-quality wireless headphones with noise cancellation",
-      "price": 99.99,
-      "quantity": 45,
-      "sold": 23,
-      "totalRevenue": 2299.77,
-      "isActive": true,
-    },
-    {
-      "imageUrl": 'assets/categoriesimage/tshirt.png',
-      "name": "tshirt",
-      "category": "clothes",
-      "description": "High-quality cotton tshirt",
-      "price": 5.99,
-      "quantity": 450,
-      "sold": 23,
-      "totalRevenue": 2299.77,
-      "isActive": true,
-    },
-    {
-      "imageUrl": 'assets/categoriesimage/headphones.jpg',
-      "name": "headphones",
-      "category": "Electronics",
-      "description": "High-quality wireless headphones with noise cancellation",
-      "price": 99.99,
-      "quantity": 45,
-      "sold": 23,
-      "totalRevenue": 2299.77,
-      "isActive": true,
-    },
-    {
-      "imageUrl": 'assets/categoriesimage/tshirt.png',
-      "name": "tshirt",
-      "category": "clothes",
-      "description": "High-quality cotton tshirt",
-      "price": 5.99,
-      "quantity": 450,
-      "sold": 23,
-      "totalRevenue": 2299.77,
-      "isActive": true,
-    },
-  ];
+  );
+}
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getAllProductsByMerchantId(); // getLocationFromIP();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    int totalSold=0;
+    int totalRevenue=0;
+    for(int i=0; i<getProducts.length; i++) {
+      totalSold+=getProducts[i].changedQuantity;
+      totalRevenue+=getProducts[i].changedQuantity * getProducts[i].price;
+    }
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
@@ -115,16 +198,16 @@ class _MerchantDashboardState extends State<MerchantDashboard> {
                     8.0,
                   ), // Padding around the stat cards row
                   child: Row(
-                    children: const [
+                    children:  [
                       MerchantCard(
                         title: 'Total Products',
-                        value: '6',
+                        value: '${getProducts.length}',
                         trend: '0 low stock items',
                         icon: Icons.inventory_2_outlined,
                       ),
                       MerchantCard(
                         title: 'Total Sold',
-                        value: '357',
+                        value: '$totalSold',
                         trend: '+12% from last month',
                         icon: Icons.shopping_cart_outlined,
                       ),
@@ -136,19 +219,19 @@ class _MerchantDashboardState extends State<MerchantDashboard> {
                     8.0,
                   ), // Padding around the stat cards row
                   child: Row(
-                    children: const [
+                    children:  [
                       MerchantCard(
                         title: 'Total Revenue',
-                        value: '\$11259.43',
+                        value: '\$ $totalRevenue',
                         trend: '+8% from last month',
                         icon: Icons.attach_money,
                       ),
-                      MerchantCard(
-                        title: 'Avg. Order Value',
-                        value: '\$31.54',
-                        trend: '+2% from last month',
-                        icon: Icons.ssid_chart, // Or a similar trend icon
-                      ),
+                      // MerchantCard(
+                      //   title: 'Avg. Order Value',
+                      //   value: '\$31.54',
+                      //   trend: '+2% from last month',
+                      //   icon: Icons.ssid_chart, // Or a similar trend icon
+                      // ),
                     ],
                   ),
                 ),
@@ -266,6 +349,7 @@ class _MerchantDashboardState extends State<MerchantDashboard> {
                             ),
                             ElevatedButton.icon(
                               onPressed: () {
+                                showDialogs(context);
                                 // Handle add product action
                               },
                               icon: Icon(Icons.add, color: Colors.white),
@@ -288,9 +372,10 @@ class _MerchantDashboardState extends State<MerchantDashboard> {
                           ],
                         ),
                       ),
+                      getProducts.length>0 ?
                       GridView.builder(
                         padding: const EdgeInsets.all(16.0),
-                        itemCount: products.length,
+                        itemCount: getProducts.length,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -300,19 +385,18 @@ class _MerchantDashboardState extends State<MerchantDashboard> {
                           childAspectRatio: 1,
                         ),
                         itemBuilder: (context, index) {
+                          int revenue =  getProducts[index].changedQuantity *getProducts[index].price;
                           return ProductCard(
-                            imageUrl: products[index]["imageUrl"],
-                            name: products[index]["name"],
-                            category: products[index]["category"],
-                            description: products[index]["description"],
-                            price: products[index]["price"],
-                            quantity: products[index]["quantity"],
-                            sold: products[index]["sold"],
-                            totalRevenue: products[index]["totalRevenue"],
-                            isActive: products[index]["isActive"],
+                            changedQuantity:getProducts[index].changedQuantity,
+                            totalRevenue: revenue,
+                            imageUrl: getProducts[index].imageUrl,
+                            name: getProducts[index].name,
+                            category: getProducts[index].category,
+                            price:getProducts[index].price,
+                            quantity:getProducts[index].quantity,
                           );
                         },
-                      ),
+                      ): Text("No Products found"),
                     ],
                   ),
                 ),

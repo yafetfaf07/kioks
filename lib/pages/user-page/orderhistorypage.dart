@@ -3,7 +3,8 @@ import 'package:flutter_project/widgets/user-widgets/orderitem.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class OrderHistoryPage extends StatefulWidget {
-  const OrderHistoryPage({super.key});
+  final String id;
+  const OrderHistoryPage({super.key, required this.id});
 
   @override
   State<OrderHistoryPage> createState() => _OrderHistoryPageState();

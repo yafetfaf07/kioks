@@ -1,17 +1,43 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_project/models/Product.dart';
 import 'package:flutter_project/widgets/user-widgets/checkoutitems.dart';
 import 'package:google_fonts/google_fonts.dart';
+import "package:http/http.dart" as http;
 
 class CheckOutPage extends StatefulWidget {
-  const CheckOutPage({super.key});
+  final List<Product> products;
+  final String uid;
+  const CheckOutPage({super.key, required this.products, required this.uid});
 
   @override
   State<CheckOutPage> createState() => _CheckOutPageState();
 }
 
 class _CheckOutPageState extends State<CheckOutPage> {
+  Future<void> createOrder() async {
+    final productList = widget.products.map(
+      (product) => {"pid": product.id, "quantity":2},
+    ).toList();
+    final url = Uri.parse("http://localhost:5000/api/order/create");
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"uid": widget.uid, "product": productList}),
+    );
+    if(response.statusCode==201) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Successful")));
+      print("Order created: ${response.body}");
+    }
+  }
+
+  int total = 0;
   @override
   Widget build(BuildContext context) {
+    for (int i = 0; i < widget.products.length; i++) {
+      total += widget.products[i].price;
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -37,9 +63,23 @@ class _CheckOutPageState extends State<CheckOutPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              CheckOutItems(),
-              CheckOutItems(),
-              CheckOutItems(),
+
+              SizedBox(
+                height: 150,
+                child: ListView.builder(
+                  itemCount: widget.products.length,
+                  itemBuilder: (context, index) {
+                    return CheckOutItems(
+                      id: widget.products[index].id,
+                      name: widget.products[index].name,
+                      price: widget.products[index].price,
+                    );
+                  },
+                ),
+              ),
+              // CheckOutItems(),
+              // CheckOutItems(),
+              // CheckOutItems(),
               const SizedBox(height: 30),
               Text(
                 'Delivered to',
@@ -93,7 +133,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '180',
+                        "rred",
                         style: GoogleFonts.poppins(
                           fontSize: 15,
                           fontWeight: FontWeight.w400,
@@ -159,7 +199,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '195',
+                        total.toString(),
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -174,12 +214,17 @@ class _CheckOutPageState extends State<CheckOutPage> {
               Center(
                 child: FractionallySizedBox(
                   widthFactor: 0.9,
-                
+
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      createOrder();
+                    },
                     style: ElevatedButton.styleFrom(
                       alignment: Alignment.center,
-                      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 25),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 25,
+                      ),
                       backgroundColor: Colors.green.shade700,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(

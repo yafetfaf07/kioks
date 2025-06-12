@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class CartItems extends StatelessWidget {
-  const CartItems({super.key});
+class CartItems extends StatefulWidget {
+  final String name;
+  final int price;
+  final String id;
+  const CartItems({
+    super.key,
+    required this.id,
+    required this.name,
+    required this.price,
+  });
 
   @override
+  State<CartItems> createState() => _CartItemsState();
+}
+
+class _CartItemsState extends State<CartItems> {
+  int quantity = 1;
+  @override
   Widget build(BuildContext context) {
-    return Container( 
-      margin:EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+    print("Name ${widget.id}");
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(width: 1, color: Colors.grey.shade300),
@@ -22,14 +37,14 @@ class CartItems extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Red onions',
+                  widget.name,
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 Text(
-                  '1kg, 45Br',
+                  '1kg, ${widget.price.toString()} Br',
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     color: Colors.green.shade400,
@@ -40,19 +55,41 @@ class CartItems extends StatelessWidget {
             Row(
               children: [
                 IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.remove_circle, color: Colors.grey.shade400, size: 35,),
+                  onPressed: () {
+                    if (quantity == 0) {
+                      setState(() {
+                        quantity = quantity;
+                      });
+                    } else {
+                      setState(() {
+                        quantity = quantity - 1;
+                      });
+                    }
+                  },
+                  icon: Icon(
+                    Icons.remove_circle,
+                    color: Colors.grey.shade400,
+                    size: 35,
+                  ),
                 ),
                 Text(
-                  '2',
+                  quantity.toString(),
                   style: GoogleFonts.poppins(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.add_circle_rounded, color: Colors.green.shade600, size: 35,),
+                  onPressed: () {
+                    setState(() {
+                      quantity = quantity + 1;
+                    });
+                  },
+                  icon: Icon(
+                    Icons.add_circle_rounded,
+                    color: Colors.green.shade600,
+                    size: 35,
+                  ),
                 ),
               ],
             ),

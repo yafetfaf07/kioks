@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/pages/user-page/cartpage.dart';
 import 'package:flutter_project/pages/user-page/categorypage.dart';
 import 'package:flutter_project/pages/user-page/orderhistorypage.dart';
+import 'package:flutter_project/pages/user-page/reviewpage.dart';
 import 'package:flutter_project/pages/user-page/userprofilepage.dart';
 //import 'package:flutter_project/pages/kiokspage.dart';
 import 'package:flutter_project/widgets/user-widgets/categorycards.dart';
@@ -48,14 +49,14 @@ class _UserHomepageState extends State<UserHomepage> {
     );
     if (response.statusCode == 200) {
       List<dynamic> merchantResponse = json.decode(response.body);
-      print(response.body);
+      // print(response.body);
       setState(() {
         getMerchantData.clear(); // Clear previous data to avoid duplicates
         getMerchantData.addAll(merchantResponse);
         isFetching = false;
       });
     } else {
-      print("Error Response: ${response.body}");
+      // print("Error Response: ${response.body}");
     }
   }
 
@@ -71,6 +72,7 @@ class _UserHomepageState extends State<UserHomepage> {
 
   @override
   Widget build(BuildContext context) {
+    print("User id ${widget.id}");
     return DefaultTabController(
       length: 4,
       child: Scaffold(
@@ -171,9 +173,9 @@ class _UserHomepageState extends State<UserHomepage> {
                       ),
                 ],
               ),
-              CartPage(),
-              OrderHistoryPage(),
-              UserProfilePage(),
+              CartPage(id: widget.id,),
+              OrderHistoryPage(id:widget.id),
+              Reviewpage()
             ],
           ),
         ),

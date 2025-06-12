@@ -53,6 +53,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
           
         }
       } catch (e) {
+        print(e);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
