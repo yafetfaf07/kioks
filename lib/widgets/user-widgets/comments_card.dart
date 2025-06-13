@@ -41,6 +41,7 @@ class CommentsCard extends StatelessWidget {
                         style: TextStyle(color: Colors.grey),
                       ),
                     ),
+                    // if no comment is provided
                   if (review.comment.isEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 4.0),

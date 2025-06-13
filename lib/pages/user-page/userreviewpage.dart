@@ -11,7 +11,7 @@ class UserReviewPage extends StatefulWidget {
 
 class _UserReviewPageState extends State<UserReviewPage> {
     final List<Review> reviews = [
-    Review(name: "Vithun", comment: "The worst one I had ever I order from beu delivery"),
+    Review(name: "Abe", comment: "The worst one I had ever I order from beu delivery"),
     Review(name: "bruck", comment: ""),
     Review(name: "SarA", comment: "The broccoli 🥦 wasn't cooked it was raw ,I don't like it 😔"),
     Review(name: "Hode", comment: "The beef is not fresh at all. Almost going bad. same thing happened with my previous order of mixed noodle fish testing terrible"),
