@@ -11,7 +11,8 @@ import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 
 class MerchantDashboard extends StatefulWidget {
-  const MerchantDashboard({super.key});
+  final id;
+  const MerchantDashboard({super.key, required this.id});
 
   @override
   State<MerchantDashboard> createState() => _MerchantDashboardState();
@@ -53,12 +54,22 @@ Future<void> uploadProduct() async {
     request.fields['category'] = category.text;
     request.fields['quantity'] = quantity.text;
     request.fields['changedQuantity']=quantity.text;
+    
+    var response = await request.send();
+
+    if(response.statusCode==201) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Product Uploaded Successfully")));
+    }
+      else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${response.statusCode}")));
+      }
+
 }
 
 
 List<Product> getProducts=[];
 Future<void> getAllProductsByMerchantId() async {
-  final url = Uri.parse("http://localhost:5000/api/product/getProductByMerchantId/68430c59fb8f85b000da31af");
+  final url = Uri.parse("http://localhost:5000/api/product/getProductByMerchantId/${widget.id}");
   final response = await http.get(url, headers: {"Content-Type":"application/json"});
 
   if(response.statusCode==200) {
@@ -149,6 +160,8 @@ void showDialogs(BuildContext context) {
   );
 }
 
+
+
   @override
   void initState() {
     super.initState();
@@ -162,8 +175,8 @@ void showDialogs(BuildContext context) {
     int totalSold=0;
     int totalRevenue=0;
     for(int i=0; i<getProducts.length; i++) {
-      totalSold+=getProducts[i].changedQuantity;
-      totalRevenue+=getProducts[i].changedQuantity * getProducts[i].price;
+      totalSold+=(getProducts[i].quantity-getProducts[i].changedQuantity);
+      totalRevenue+=(getProducts[i].quantity-getProducts[i].changedQuantity) * getProducts[i].price;
     }
     return Scaffold(
       backgroundColor: Colors.grey[200],
@@ -385,8 +398,9 @@ void showDialogs(BuildContext context) {
                           childAspectRatio: 1,
                         ),
                         itemBuilder: (context, index) {
-                          int revenue =  getProducts[index].changedQuantity *getProducts[index].price;
+                          int revenue =  (getProducts[index].quantity-getProducts[index].changedQuantity) *getProducts[index].price;
                           return ProductCard(
+                            id:getProducts[index].id,
                             changedQuantity:getProducts[index].changedQuantity,
                             totalRevenue: revenue,
                             imageUrl: getProducts[index].imageUrl,

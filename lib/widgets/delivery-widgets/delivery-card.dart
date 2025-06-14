@@ -26,7 +26,7 @@ class Deliverycard extends StatelessWidget {
             child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Order: #${getData['orderId']}",
+                  "Order: #${getData['_id']}",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 )),
           ),
@@ -40,18 +40,22 @@ class Deliverycard extends StatelessWidget {
                     Row(
                       children: [
                         Icon(
-                          Icons.shop,
-                          color: Colors.red,
+                          Icons.person,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Current Pickup",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
-                          ),
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Delivery Location",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Text(getData['user']['firstname'])
+                          ],
                         )
                       ],
                     ),
@@ -86,10 +90,8 @@ class Deliverycard extends StatelessWidget {
                                         ),
                                         Align(
                                           alignment: Alignment.centerLeft,
-                                          child: Text("Long:" +
-                                              productList[index]['merchant']
-                                                      ['address']['longitude']
-                                                  .toString()),
+                                          child: Text("Long:${productList[index]['merchant']
+                                                      ['address']['longitude']}"),
                                         )
                                       ],
                                     )
@@ -107,11 +109,14 @@ class Deliverycard extends StatelessWidget {
                         SizedBox(
                           height: 40,
                           child: ListView.builder(itemCount:productList.length,itemBuilder: (BuildContext context, int index) {
+                            var totalPrice;
+                            totalPrice+=productList[index]['price'];
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                   Text("${productList[index]['name']} from ${productList[index]['merchant']['firstname']}"),
-                                  Text("\$ ${productList[index]['price'].toString()}")
+                                  Text("\$ ${productList[index]['price'].toString()}"),
+                                  Text("Total Price \$ $totalPrice")
                               ],
                             );
                           } ),

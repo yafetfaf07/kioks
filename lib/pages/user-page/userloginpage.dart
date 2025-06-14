@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_project/pages/deliver-personnel-page/deliveryPage.dart';
+import 'package:flutter_project/pages/merchant-page/MerchantDashboard.dart';
 import 'package:flutter_project/pages/user-page/userhomepage.dart';
-import 'package:flutter_project/pages/user-page/usersignuppage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import "package:http/http.dart" as http;
 
@@ -14,11 +15,33 @@ class UserLoginpage extends StatefulWidget {
 }
 
 class _UserLoginpageState extends State<UserLoginpage> {
+
+  bool isUser = true;
+  bool isMerchant = false;
+  bool isDeliver = false;
+
   final GlobalKey<FormState> _loginFormkey = GlobalKey<FormState>();
   final TextEditingController _phonenumbertext = TextEditingController();
   final TextEditingController _passwordtext = TextEditingController();
+
+    void _selectAccountType(String type) {
+    setState(() {
+      isUser = type == 'user';
+      isMerchant = type == 'merchant';
+      isDeliver = type == 'deliver';
+    });
+  }
 Future<void> loginUser (String phoneNo, String password) async {
-String url = "http://localhost:5000/api/users/login/$phoneNo/$password";
+  String url="";
+  if(isUser) {
+ url = "http://localhost:5000/api/users/login/$phoneNo/$password";
+  }
+  else if(isDeliver) {
+    url="http://localhost:5000/api/deliver/login/$phoneNo/$password";
+  }
+  else if(isMerchant) {
+    url="http://localhost:5000/api/merchant/login/$phoneNo/$password";
+  }
 
 final loginUrl = Uri.parse(url);
 try {
@@ -28,8 +51,17 @@ final response = await http.get(loginUrl, headers: {"Content-Type":'application/
 
 if(response.statusCode==200) {
   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(backgroundColor: Colors.green,content: Text('Login Successful')));
-
+    if(isUser) {
   Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserHomepage(id: responseBody['_id'])));
+    }
+    else if(isDeliver) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => Deliverpage(id: responseBody['_id'])));
+
+    }
+    else if(isMerchant) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => MerchantDashboard(id: responseBody['_id'])));
+
+    }
 }
 else if(response.statusCode==404) {
   ScaffoldMessenger.of(context).showSnackBar( SnackBar(backgroundColor: Colors.red,content: Text(responseBody['error'])));
@@ -60,11 +92,70 @@ print("Error: $error");
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 5),
-                Text(
-                  'Welcome back. You\'ve been missed so much.',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey.shade800,
-                    fontSize: 13,
+              Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(color: Colors.grey.shade200),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      GestureDetector(
+                        onTap: () => _selectAccountType('user'),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isUser ? Colors.white : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            "User",
+                            style: TextStyle(
+                              color: isUser ? Colors.blue : Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => _selectAccountType('deliver'),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isDeliver ? Colors.white : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            "Deliver Personnel",
+                            style: TextStyle(
+                              color: isDeliver ? Colors.blue : Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => _selectAccountType('merchant'),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isMerchant ? Colors.white : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            "Merchant",
+                            style: TextStyle(
+                              color: isMerchant ? Colors.blue : Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Form(

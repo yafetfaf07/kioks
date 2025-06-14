@@ -1,92 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/pages/user-page/reviewpage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
-var date = DateTime.now();
+var dates = DateTime.now();
 
 class OrderItem extends StatelessWidget {
-  const OrderItem({super.key});
+  final merchantName;
+  final merchantId;
+  final date;
+  final String userId;
+  final List<dynamic> items;
+  const OrderItem({super.key, required this.merchantName, required this.date, required this.items, required this.merchantId, required this.userId});
+
+
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(width: 1, color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    DateTime parsedDate = DateTime.parse(date as String);
+    String formattedDate = DateFormat("MMM dd, yyyy hh:mm a").format(parsedDate);
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Reviewpage(items:items, merchantName:merchantName, merchantId:merchantId, userId:userId)));
+      },
+      child: Container(
+        margin: EdgeInsets.all(10),
+        child: Column(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Shemsu suk',
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(color: Colors.blueAccent),
                 ),
-                Text(
-                  '$date',
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
+                Column(
+                  children: [
+                    Text(merchantName),
+                    Text(formattedDate),
+                  ],
                 ),
-                const SizedBox(height: 3),
-                Text('6 items', style: TextStyle(fontSize: 17,)),
-                const SizedBox(height: 3),
-
-                Text(
-                  'Onions  x2',
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                Text(
-                  'Carrots  x2',
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                Text(
-                  'Vegetable Oil   x2',
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
+                Text("${items.length}item"),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: Row(
-                children: [
-                  Text(
-                    'Br',
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(width: 4),
-                  Text(
-                    '760',
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.green.shade500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            Divider()
           ],
         ),
       ),

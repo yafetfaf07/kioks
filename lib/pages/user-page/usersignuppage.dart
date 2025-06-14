@@ -20,44 +20,110 @@ class _UserSignUppageState extends State<UserSignUppage> {
   final TextEditingController _signupPasswordtext = TextEditingController();
   bool isChecked = false;
 
+  bool isUser = true;
+  bool isMerchant = false;
+  bool isDeliver = false;
+
   Future<void> createUser() async {
-    final response = await http.get(Uri.parse('http://ip-api.com/json/'));
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final latitude = data['lat'];
-      final longitude = data['lon'];
-
-      final url = Uri.parse("http://localhost:5000/api/users/signup");
-      final userBody = {
-        "firstname": _firstnametext.text,
-        "lastname": _lastnametext.text,
-        "phone_no": _phonenumber.text,
-        'password': _signupPasswordtext.text,
-        "address": {"latitude": latitude, "longitude": longitude},
-      };
-
-      try {
-        final responses = await http.post(
-          url,
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(userBody),
-        );
-        if (responses.statusCode == 201) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(backgroundColor: Colors.green,content: Text("Sign up successful")));
-        }
-        else if(responses.statusCode==409) {
-          var errorMessage=jsonDecode(responses.body);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Colors.red,content: Text(errorMessage['error'])));
-          
-        }
-      } catch (e) {
-        print(e);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-      }
+    if (!isChecked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text("Please allow location access"),
+        ),
+      );
+      return;
     }
-    ;
+
+    final response = await http.get(Uri.parse('http://ip-api.com/json/'));
+    if (response.statusCode != 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text("Failed to fetch location data"),
+        ),
+      );
+      return;
+    }
+
+    final data = jsonDecode(response.body);
+    final latitude = data['lat'];
+    final longitude = data['lon'];
+
+    String urlString = "";
+    if (isUser) {
+      urlString = "http://localhost:5000/api/users/signup";
+    } else if (isDeliver) {
+      urlString = "http://localhost:5000/api/deliver/signup";
+    } else if (isMerchant) {
+      urlString = "http://localhost:5000/api/merchant/signup";
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text("Please select an account type"),
+        ),
+      );
+      return;
+    }
+
+    final url = Uri.parse(urlString);
+    final userBody = {
+      "firstname": _firstnametext.text,
+      "lastname": _lastnametext.text,
+      "phone_no": _phonenumber.text,
+      'password': _signupPasswordtext.text,
+      "address": {"latitude": latitude, "longitude": longitude},
+    };
+
+    try {
+      final responses = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(userBody),
+      );
+      if (responses.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.green,
+            content: Text("Sign up successful"),
+          ),
+        );
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (builder) => UserLoginpage()),
+        );
+      } else if (responses.statusCode == 409) {
+        var errorMessage = jsonDecode(responses.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(errorMessage['error'] ?? "Sign up failed"),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text("Sign up failed: ${responses.statusCode}"),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Error: $e'),
+        ),
+      );
+    }
+  }
+
+  void _selectAccountType(String type) {
+    setState(() {
+      isUser = type == 'user';
+      isMerchant = type == 'merchant';
+      isDeliver = type == 'deliver';
+    });
   }
 
   @override
@@ -66,49 +132,113 @@ class _UserSignUppageState extends State<UserSignUppage> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 40, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 12),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 const SizedBox(height: 15),
                 Text(
-                  'Sign Up',
+                  'Create an Account',
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w600,
                     fontSize: 26,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 5),
-                Text(
-                  'Welcome. We are waiting for your presence.',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey.shade800,
-                    fontSize: 13,
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(color: Colors.grey.shade200),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      GestureDetector(
+                        onTap: () => _selectAccountType('user'),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isUser ? Colors.white : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            "User",
+                            style: TextStyle(
+                              color: isUser ? Colors.blue : Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => _selectAccountType('deliver'),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isDeliver ? Colors.white : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            "Deliver Personnel",
+                            style: TextStyle(
+                              color: isDeliver ? Colors.blue : Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => _selectAccountType('merchant'),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isMerchant ? Colors.white : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            "Merchant",
+                            style: TextStyle(
+                              color: isMerchant ? Colors.blue : Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                const SizedBox(height: 5),
+                const Text("Select account type"),
+                const SizedBox(height: 5),
                 Form(
                   key: _signupFormkey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       Text(
-                        ' First Name',
+                        'First Name',
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
-                        textAlign: TextAlign.left,
                       ),
                       const SizedBox(height: 5),
                       TextFormField(
                         controller: _firstnametext,
                         validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your first name';
+                          }
                           return null;
                         },
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(
+                          contentPadding: const EdgeInsets.symmetric(
                             vertical: 18,
                             horizontal: 15,
                           ),
@@ -116,7 +246,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           hintStyle: TextStyle(color: Colors.grey.shade600),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                               color: Colors.white,
                               width: 1,
                             ),
@@ -126,7 +256,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                             borderSide: BorderSide(
                               color: Colors.grey.shade300,
                               width: 2,
-                            ), // Border when enabled
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -146,17 +276,18 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
-                        textAlign: TextAlign.left,
                       ),
                       const SizedBox(height: 5),
                       TextFormField(
                         controller: _lastnametext,
                         validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your last name';
+                          }
                           return null;
                         },
-
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(
+                          contentPadding: const EdgeInsets.symmetric(
                             vertical: 18,
                             horizontal: 15,
                           ),
@@ -164,7 +295,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           hintStyle: TextStyle(color: Colors.grey.shade600),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                               color: Colors.white,
                               width: 1,
                             ),
@@ -174,7 +305,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                             borderSide: BorderSide(
                               color: Colors.grey.shade300,
                               width: 2,
-                            ), // Border when enabled
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -194,16 +325,19 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
-                        textAlign: TextAlign.left,
                       ),
                       const SizedBox(height: 5),
                       TextFormField(
                         controller: _phonenumber,
                         validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your phone number';
+                          }
+                         
                           return null;
                         },
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(
+                          contentPadding: const EdgeInsets.symmetric(
                             vertical: 18,
                             horizontal: 15,
                           ),
@@ -211,7 +345,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           hintStyle: TextStyle(color: Colors.grey.shade600),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                               color: Colors.white,
                               width: 1,
                             ),
@@ -221,7 +355,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                             borderSide: BorderSide(
                               color: Colors.grey.shade300,
                               width: 2,
-                            ), // Border when enabled
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -242,15 +376,20 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
-                        textAlign: TextAlign.left,
                       ),
                       TextFormField(
                         controller: _signupPasswordtext,
                         validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a password';
+                          }
+                          if (value.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
                           return null;
                         },
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(
+                          contentPadding: const EdgeInsets.symmetric(
                             vertical: 18,
                             horizontal: 15,
                           ),
@@ -258,7 +397,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           hintStyle: TextStyle(color: Colors.grey.shade600),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                               color: Colors.white,
                               width: 1,
                             ),
@@ -268,7 +407,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                             borderSide: BorderSide(
                               color: Colors.grey.shade300,
                               width: 2,
-                            ), // Border when enabled
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -299,18 +438,18 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 30),
                       FractionallySizedBox(
                         widthFactor: 0.98,
-
                         child: ElevatedButton(
                           onPressed: () {
-                            createUser();
+                            if (_signupFormkey.currentState!.validate()) {
+                              createUser();
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             alignment: Alignment.center,
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               vertical: 20,
                               horizontal: 25,
                             ),
@@ -337,17 +476,17 @@ class _UserSignUppageState extends State<UserSignUppage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text('Already have an account?'),
+                    const Text('Already have an account?'),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (builder) => UserLoginpage(),
+                            builder: (builder) => const UserLoginpage(),
                           ),
                         );
                       },
                       style: TextButton.styleFrom(
-                        padding: EdgeInsets.fromLTRB(0, 2, 10, 4),
+                        padding: const EdgeInsets.fromLTRB(0, 2, 10, 4),
                       ),
                       child: Text(
                         'Log In',

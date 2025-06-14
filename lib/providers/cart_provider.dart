@@ -1,9 +1,8 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_project/models/Product.dart';
 
 class CartProvider extends ChangeNotifier {
-
-  final List<Product> _items=[];
+  final List<Product> _items = [];
 
   List<Product> get items => _items;
 
@@ -12,21 +11,29 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeProduct (Product p) {
+  void removeProduct(Product p) {
     _items.remove(p);
     notifyListeners();
   }
-  void removeAll () {
+
+  void removeAll() {
     _items.clear();
-  notifyListeners();
+    notifyListeners();
   }
 
-  double getTotal () {
-    double total=0;
-    for(int i=0; i<_items.length; i++) {
-      total+=items[i].price;
+  void updateQuantity(String id, int newQuantity) {
+    final index = _items.indexWhere((product) => product.id == id);
+    if (index != -1) {
+      _items[index].cartChangeQuantity = newQuantity;
+      notifyListeners();
+    }
+  }
+
+  double getTotal() {
+    double total = 0;
+    for (final item in _items) {
+      total += item.price * item.quantity;
     }
     return total;
   }
-
 }

@@ -18,7 +18,7 @@ class CheckOutPage extends StatefulWidget {
 class _CheckOutPageState extends State<CheckOutPage> {
   Future<void> createOrder() async {
     final productList = widget.products.map(
-      (product) => {"pid": product.id, "quantity":2},
+      (product) => {"pid": product.id, "quantity":product.cartChangeQuantity},
     ).toList();
     final url = Uri.parse("http://localhost:5000/api/order/create");
     final response = await http.post(

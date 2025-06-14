@@ -2,10 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_project/pages/user-page/cartpage.dart';
-import 'package:flutter_project/pages/user-page/categorypage.dart';
 import 'package:flutter_project/pages/user-page/orderhistorypage.dart';
-import 'package:flutter_project/pages/user-page/reviewpage.dart';
-import 'package:flutter_project/pages/user-page/userprofilepage.dart';
 //import 'package:flutter_project/pages/kiokspage.dart';
 import 'package:flutter_project/widgets/user-widgets/categorycards.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -49,7 +46,7 @@ class _UserHomepageState extends State<UserHomepage> {
     );
     if (response.statusCode == 200) {
       List<dynamic> merchantResponse = json.decode(response.body);
-      // print(response.body);
+      print(response.body);
       setState(() {
         getMerchantData.clear(); // Clear previous data to avoid duplicates
         getMerchantData.addAll(merchantResponse);
@@ -74,7 +71,7 @@ class _UserHomepageState extends State<UserHomepage> {
   Widget build(BuildContext context) {
     print("User id ${widget.id}");
     return DefaultTabController(
-      length: 4,
+      length: 3,
       child: Scaffold(
         backgroundColor: Colors.grey.shade50,
         body: SafeArea(
@@ -157,7 +154,7 @@ class _UserHomepageState extends State<UserHomepage> {
                             String rating;
                             if (getMerchantData[index]['overallRating'] ==
                                 null) {
-                              rating = 0.0.toString();
+                              rating = "No rating";
                             } else {
                               rating =
                                   getMerchantData[index]['overallRating']
@@ -166,7 +163,7 @@ class _UserHomepageState extends State<UserHomepage> {
                             return KioksCard(
                               id:getMerchantData[index]['_id'],
                               name: getMerchantData[index]['firstname'],
-                              rating: getMerchantData[index]['overallRating']+.0,
+                              rating:rating ,
                             );
                           },
                         ),
@@ -175,7 +172,6 @@ class _UserHomepageState extends State<UserHomepage> {
               ),
               CartPage(id: widget.id,),
               OrderHistoryPage(id:widget.id),
-              Reviewpage()
             ],
           ),
         ),
@@ -197,13 +193,7 @@ class _UserHomepageState extends State<UserHomepage> {
               ),
             ),
             Tab(icon: Icon(Icons.article, color: Colors.green, size: 30)),
-            Tab(
-              icon: Icon(
-                Icons.account_circle_rounded,
-                color: Colors.green,
-                size: 30,
-              ),
-            ),
+      
           ],
         ),
       ),

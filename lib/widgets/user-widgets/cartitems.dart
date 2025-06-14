@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/providers/cart_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class CartItems extends StatefulWidget {
   final String name;
   final int price;
   final String id;
+
   const CartItems({
     super.key,
     required this.id,
@@ -20,6 +23,8 @@ class _CartItemsState extends State<CartItems> {
   int quantity = 1;
   @override
   Widget build(BuildContext context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+
     print("Name ${widget.id}");
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
@@ -56,13 +61,10 @@ class _CartItemsState extends State<CartItems> {
               children: [
                 IconButton(
                   onPressed: () {
-                    if (quantity == 0) {
+                    if (quantity > 1) {
                       setState(() {
-                        quantity = quantity;
-                      });
-                    } else {
-                      setState(() {
-                        quantity = quantity - 1;
+                        quantity--;
+                        cartProvider.updateQuantity(widget.id, quantity);
                       });
                     }
                   },
@@ -82,7 +84,8 @@ class _CartItemsState extends State<CartItems> {
                 IconButton(
                   onPressed: () {
                     setState(() {
-                      quantity = quantity + 1;
+                      quantity++;
+                      cartProvider.updateQuantity(widget.id, quantity);
                     });
                   },
                   icon: Icon(

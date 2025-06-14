@@ -6,6 +6,7 @@ class Product {
   final int quantity;
   final String imageUrl;
   final int changedQuantity;
+  int cartChangeQuantity;
 
   Product( {
     required this.changedQuantity,
@@ -15,6 +16,7 @@ class Product {
     required this.id,
     required this.name,
     required this.price,
+    this.cartChangeQuantity=1
   });
 
   Map<String, dynamic> toJson() {

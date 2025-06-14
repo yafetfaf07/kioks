@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class ProductCard extends StatelessWidget {
+import 'package:flutter/material.dart';
+import "package:http/http.dart" as http;
+
+class ProductCard extends StatefulWidget {
   final String imageUrl;
   final String name;
   final String category;
@@ -8,9 +11,11 @@ class ProductCard extends StatelessWidget {
   final int quantity;
   final int totalRevenue;
   final int changedQuantity;
+  final String id;
 
-  const ProductCard({
+   ProductCard({
     super.key,
+    required this.id,
     required this.imageUrl,
     required this.name,
     required this.category,
@@ -19,6 +24,68 @@ class ProductCard extends StatelessWidget {
     required this.totalRevenue,
     required this.changedQuantity
   });
+
+  @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  TextEditingController nameController = TextEditingController();
+
+    TextEditingController quantityController = TextEditingController();
+
+Future<void> updateProduct() async {
+  // if(selectedFile==null) return;
+  final url = Uri.parse("http://localhost:5000/api/product/updateProduct/${widget.id}");
+final response = await http.patch(url, headers: {"Content-Type":"application/json"}, body: jsonEncode({
+  "name":nameController.text,
+  "quantity":quantityController.text,
+  "changedQuantity":quantityController.text
+}));
+if(response.statusCode==200) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Updated Successfully")));
+}
+
+}
+
+void showUpdateDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Update Product"),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Important to avoid infinite height
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Upload a new to your inventory. Fill in all the required details"),
+              SizedBox(height: 8),
+              Text("Product Name"),
+              TextField(
+                controller: nameController,
+              ),
+              SizedBox(height: 8),
+
+              Text("Quantity"),
+              TextField(
+                controller: quantityController,
+              ),
+              SizedBox(height: 16),
+
+              ElevatedButton(
+                onPressed: () {
+                  updateProduct();
+                },
+                child: Text("Update Stock"),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -48,13 +115,13 @@ class ProductCard extends StatelessWidget {
                     ),
                   ),
                   child:
-                      imageUrl.isNotEmpty
+                      widget.imageUrl.isNotEmpty
                           ? ClipRRect(
                             borderRadius: BorderRadius.vertical(
                               top: Radius.circular(12.0),
                             ),
                             child: Image.network(
-                              "http://localhost:5000/$imageUrl",
+                              "http://localhost:5000/${widget.imageUrl}",
                               fit: BoxFit.cover,
                               errorBuilder:
                                   (context, error, stackTrace) => Center(
@@ -80,11 +147,11 @@ class ProductCard extends StatelessWidget {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                     decoration: BoxDecoration(
-                      color: changedQuantity>0 ? Colors.black : Colors.redAccent,
+                      color: widget.changedQuantity>0 ? Colors.black : Colors.redAccent,
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                     child:
-                        changedQuantity>0
+                        widget.changedQuantity>0
                             ? Text(
                               'Active',
                               style: TextStyle(
@@ -114,7 +181,7 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    name,
+                    widget.name,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -125,7 +192,7 @@ class ProductCard extends StatelessWidget {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    category,
+                    widget.category,
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                   SizedBox(height: 8),
@@ -139,7 +206,7 @@ class ProductCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '\$${price.toStringAsFixed(2)}',
+                        '\$${widget.price.toStringAsFixed(2)}',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -147,7 +214,7 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Qty: ${quantity - changedQuantity}',
+                        'Qty: ${widget.changedQuantity}',
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                     ],
@@ -159,11 +226,11 @@ class ProductCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Sold: $changedQuantity',
+                        'Sold: ${widget.quantity - widget.changedQuantity}',
                         style: TextStyle(fontSize: 14, color: Colors.black),
                       ),
                       Text(
-                        '\$${totalRevenue.toStringAsFixed(2)}',
+                        '\$${widget.totalRevenue.toStringAsFixed(2)}',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -177,7 +244,7 @@ class ProductCard extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4.0),
                     child: LinearProgressIndicator(
-                      value: quantity > 0 ? changedQuantity / quantity : 0,
+                      value: widget.quantity > 0 ? (widget.quantity-widget.changedQuantity) / widget.quantity : 0,
                       backgroundColor: Colors.grey[300],
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
                       minHeight: 7, // Reduced height
@@ -229,6 +296,7 @@ class ProductCard extends StatelessWidget {
                             padding: const EdgeInsets.only(left: 8),
                             child: OutlinedButton(
                               onPressed: () {
+                                showUpdateDialog(context);
                                 // Add navigation logic here
                               },
                               style: OutlinedButton.styleFrom(

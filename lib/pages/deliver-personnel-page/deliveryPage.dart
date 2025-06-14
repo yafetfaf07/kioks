@@ -7,7 +7,8 @@ import 'package:latlong2/latlong.dart';
 import "package:http/http.dart" as http;
 
 class Deliverpage extends StatefulWidget {
-  const Deliverpage({super.key});
+  final id;
+  const Deliverpage({super.key, required this.id});
 
   @override
   State<Deliverpage> createState() => _DeliverpageState();
@@ -21,7 +22,7 @@ class _DeliverpageState extends State<Deliverpage> {
 
   Future<void> getOrder() async {
     final url = Uri.parse(
-        "http://localhost:5000/api/order/getOrderByDeliverId/68306be05ba15e1a12b52d34");
+        "http://localhost:5000/api/order/getOrderByDeliverId/${widget.id}");
 
     final response =
         await http.get(url, headers: {"Content-Type": "application/json"});

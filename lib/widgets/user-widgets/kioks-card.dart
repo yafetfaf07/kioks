@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 class KioksCard extends StatelessWidget {
 final String id;
 final String name;
-final double rating;
+final String rating;
   const   KioksCard({super.key, required this.id, required this.name, required this.rating});
 
   @override
