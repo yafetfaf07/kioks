@@ -3,115 +3,104 @@ import 'package:flutter_project/pages/user-page/kiokspage.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class KioksCard extends StatelessWidget {
-final String id;
-final String name;
-final String rating;
-  const   KioksCard({super.key, required this.id, required this.name, required this.rating});
+  final String id;
+  final String name;
+  final String rating;
+  const KioksCard({
+    super.key,
+    required this.id,
+    required this.name,
+    required this.rating,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (builder) => KioksPage(id: id,name: name,)));
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (builder) => KioksPage(id: id, name: name, ),
+          ),
+        );
       },
-      child: Card(
-        // width: double.infinity,
-        // height: 120,
-        // decoration: BoxDecoration(
-        //   border: Border.all(width: 10, color: Colors.grey.shade100),
-        //   borderRadius: BorderRadius.circular(15),
-        // ),
-        color: Colors.white,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: Container(
+        width: 300,
+        margin: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade300,
+              blurRadius: 5,
+              spreadRadius: 5,
+            ),
+          ],
+        ),
+        child: Column(
           children: [
-            Card(
-              child: Image.asset(
-                'assets/categoriesimage/bakery.png',
-                width: 110,
-                height: 110,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  'assets/categoriesimage/merchant.jpg',
+                  width: 300,
+                ),
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(top: 5),
-                      margin: EdgeInsets.only(left: 10),
-                      child: Text(
-                        name,
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 100,),
-                    Row(
-                      children: [
-                        Icon(Icons.star, color: Colors.orange.shade500,),
-                        Text(rating.toString()),
-                      ],
-                    ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Text(
+                    name,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
                 ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 10),
-      
-                      height: 30,
-                      width: 125,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          width: 1,
-                          color: Colors.green.shade600,
-                        ),
+                SizedBox(
+                  child: Row(
+                    children: [
+                      Icon(Icons.star_rate_rounded, color: const Color.fromARGB(255, 255, 193, 59)),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12.0,left: 8.0 ),
+                        child: Text(rating, style: TextStyle(fontWeight: FontWeight.bold),),
                       ),
-                      child: Center(
-                        child: Text(
-                          'Around 1Km away',
-                          style: TextStyle(
-                            color: Colors.green.shade600,
-                            fontSize: 12,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      height: 30,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          width: 1,
-                          color: Colors.green.shade600,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Around 42min',
-                          style: TextStyle(
-                            color: Colors.green.shade600,
-                            fontSize: 12,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  margin: EdgeInsets.only(left: 10),
-                  child: Text('Delivery Fee Starting from 20birr', style: TextStyle(color: Colors.grey),),
+                    ],
+                  ),
                 ),
               ],
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Icon(Icons.location_on_outlined, color: Colors.grey,),
+                        ),
+                        Text("0.8 km away", style: TextStyle(color: Colors.grey),),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    child: Row(
+                      children: [
+                        Icon(Icons.access_time, color: Colors.grey,),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 12.0),
+                          child: Text("Around 20 min", style: TextStyle(color: Colors.grey),),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

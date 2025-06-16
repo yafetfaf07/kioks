@@ -34,7 +34,7 @@ Future<void> pickFile() async {
 
 Future<void> uploadProduct() async {
   // if(selectedFile==null) return;
-  final url = Uri.parse("http://localhost:5000/api/product/create/68430c59fb8f85b000da31af");
+  final url = Uri.parse("http://localhost:5000/api/product/create/${widget.id}");
   var request = http.MultipartRequest("POST", url);
   final mimeType =
         lookupMimeType(selectedFile!.path) ?? 'application/octet-stream';

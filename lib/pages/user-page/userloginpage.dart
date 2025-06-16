@@ -55,10 +55,11 @@ if(response.statusCode==200) {
   Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserHomepage(id: responseBody['_id'])));
     }
     else if(isDeliver) {
-        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => Deliverpage(id: responseBody['_id'])));
+        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => Deliverypage(id: responseBody['_id'])));
 
     }
     else if(isMerchant) {
+      print(responseBody['_id']);
         Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => MerchantDashboard(id: responseBody['_id'])));
 
     }

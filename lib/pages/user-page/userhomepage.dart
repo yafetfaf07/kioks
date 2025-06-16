@@ -35,7 +35,7 @@ class _UserHomepageState extends State<UserHomepage> {
       print('Failed to get location');
     }
   }
-
+TextEditingController search = TextEditingController();
   List<dynamic> getMerchantData = [];
   Future<void> getAllMerchants(String merchants) async {
     var merchantUrl = Uri.parse(merchants);
@@ -54,6 +54,20 @@ class _UserHomepageState extends State<UserHomepage> {
       });
     } else {
       // print("Error Response: ${response.body}");
+    }
+  }
+  Future<void> getMerchantByName() async {
+    final url = Uri.parse("http://localhost:5000/api/merchant/findByName/${search.text}");
+
+    final response = await http.get(url, headers: {"Content-Type":"application/json"});
+
+    if(response.statusCode==200) {
+      List<dynamic> merchantResponse = json.decode(response.body);
+      setState(() {
+        getMerchantData.clear();
+        getMerchantData.addAll(merchantResponse);
+        isFetching=false;
+      });
     }
   }
 
@@ -84,7 +98,7 @@ class _UserHomepageState extends State<UserHomepage> {
                   Padding(
                     padding: const EdgeInsets.only(left: 15.0),
                     child: Text(
-                      'Hello,Nathan',
+                      'Hello,There',
                       style: GoogleFonts.poppins(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
@@ -94,18 +108,26 @@ class _UserHomepageState extends State<UserHomepage> {
                   const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Search',
-                          border: InputBorder.none,
-
-                          icon: Icon(Icons.search, color: Colors.grey[600]),
+                    child: Center(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width*0.65,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          border: Border.all(color: Colors.white),
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: TextField(
+                          controller: search,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.only(left:12, top:11),
+                            hintText: 'Search',
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(),
+                      
+                            suffixIcon: GestureDetector(onTap: () {
+                              getMerchantByName();
+                            },child: Icon(Icons.search, color: Colors.grey[600])),
+                          ),
                         ),
                       ),
                     ),
@@ -149,6 +171,7 @@ class _UserHomepageState extends State<UserHomepage> {
                       ? CircularProgressIndicator()
                       : Expanded(
                         child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
                           itemCount: getMerchantData.length,
                           itemBuilder: (BuildContext context, int index) {
                             String rating;

@@ -1,138 +1,173 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/widgets/delivery-widgets/deliverProductCard.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Deliverycard extends StatelessWidget {
-  final dynamic getData;
-  Deliverycard({required this.getData});
-  List<dynamic> productList = [];
+  final data;
+  const Deliverycard({super.key, required this.data});
+
+  void _launchSearch() async {
+    const query = "Flutter desktop app tutorial";
+    String urls =
+        "https://www.google.com/maps/dir/?api=1&origin=${data["user"]['latitude']},${data['user']['longitude']}&destination=9.0192538,38.7661311&travelmode=driving";
+
+    final url = Uri.parse(urls);
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    print("From Delivery Card: $getData");
-    productList.addAll(getData['products']);
+    List<dynamic> products = data['products'];
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 40),
+      margin: EdgeInsets.only(top: 40),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-          border: Border.all(width: 1, color: Colors.grey.shade200),
-          boxShadow: [
-            // BoxShadow(
-            //     color: Colors.grey.shade200, blurRadius: 5, spreadRadius: 7)
-          ],
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [BoxShadow(color: Colors.grey.shade300, blurRadius: 10)],
+      ),
+      width: 500,
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Order: #${getData['_id']}",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                )),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: SizedBox(
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.person,
-                        ),
-                        Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "Delivery Location",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Text(getData['user']['firstname'])
-                          ],
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 100,
-                      child: ListView.builder(
-                          itemCount: productList.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                child: Column(
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        "${productList[index]['merchant']['firstname']}'s Store",
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            "Lat:${productList[index]['merchant']['address']['latitude']}, ",
-                                            style:
-                                                TextStyle(color: Colors.grey),
-                                          ),
-                                        ),
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text("Long:${productList[index]['merchant']
-                                                      ['address']['longitude']}"),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          }),
-                    ),
-                    Divider(),
-
-                  SizedBox(
-                    child:Column(
-                      children: [
-                        SizedBox(
-                          height: 40,
-                          child: ListView.builder(itemCount:productList.length,itemBuilder: (BuildContext context, int index) {
-                            var totalPrice;
-                            totalPrice+=productList[index]['price'];
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                  Text("${productList[index]['name']} from ${productList[index]['merchant']['firstname']}"),
-                                  Text("\$ ${productList[index]['price'].toString()}"),
-                                  Text("Total Price \$ $totalPrice")
-                              ],
-                            );
-                          } ),
-                        )
-                      ],
-                    )
-                  )
-                  ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Order #${data['_id']}",
+                style: GoogleFonts.geologica(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
                 ),
               ),
+              Row(children: [Icon(Icons.access_time), Text("June 13, 2025")]),
+            ],
+          ),
+          SizedBox(height: 20),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.7,
+            decoration: BoxDecoration(
+              color: const Color(0Xffeff6ff),
+              borderRadius: BorderRadius.circular(10),
             ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.person_outline, color: Colors.blue),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Customer Details",
+                          style: GoogleFonts.geologica(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Name: ${data['user']['firstname']}",
+                        style: GoogleFonts.geologica(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17,
+                          color: const Color.fromARGB(255, 17, 76, 124),
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.phone_outlined, color: Colors.blue),
+                        Text('${data['user']['phone_no']}'),
+                      ],
+                    ),
+                    SizedBox(width: 50),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        color: const Color(0XFF5284EF),
+                      ),
+                      Text("Lat: ${data['user']['address']['latitude']}, "),
+                      Text("Lng: ${data['user']['address']['longitude']}"),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Items to Deliver (${products.length} Items)",
+                style: GoogleFonts.geologica(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 300,
+            child: ListView.builder(
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                return deliverProductCard(data: products[index]);
+              },
+            ),
+          ),
+
+          Divider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.attach_money_outlined, color: Colors.green),
+                  Text(
+                    "Total: \$450",
+                    style: GoogleFonts.geologica(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                spacing: 5,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: Text("Call Customer"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _launchSearch();
+                    },
+                    child: Text("View Map"),
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 }
-
-    

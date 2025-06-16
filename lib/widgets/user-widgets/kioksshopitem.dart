@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class KioksShopItem extends StatelessWidget {
+  final String merchantName;
   final String id;
   final String name;
   final String imageUrl;
@@ -10,9 +11,11 @@ class KioksShopItem extends StatelessWidget {
   final int quantity;
   final int changedQuantity;
   final VoidCallback providers;
+
   const KioksShopItem({
     super.key,
     required this.providers,
+    required this.merchantName,
     required this.changedQuantity,
     required this.id,
     required this.name,
@@ -24,90 +27,81 @@ class KioksShopItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      shadowColor: Colors.grey,
-      color: Colors.white,
-      child: SizedBox(
-        // height: 250,
-        // width: 160,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Product image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                "http://localhost:5000/" + imageUrl,
-                height: 120,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            SizedBox(height: 8),
+    return Container(
+      width: 300,
+      margin: EdgeInsets.only(right: 50),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade300,
+            blurRadius: 5,
+            spreadRadius: 5,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: AspectRatio(
+                aspectRatio: 4 / 3,
 
-            Padding(
-              padding: const EdgeInsets.only(left: 5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Br $price',
-                          style: GoogleFonts.poppins(
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        TextSpan(
-                          text: ' 1 kg',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            Spacer(),
-
-            Padding(
-              padding: const EdgeInsets.only(right: 5, bottom: 5),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.green, width: 2),
-                  ),
-                  child: IconButton(
-                    icon: Icon(Icons.add, color: Colors.green),
-                    onPressed: () {
-                      print("Is it being clicked");
-                      providers();
-                    },
-                  ),
+                child: Image.network(
+                  'http://localhost:5000/$imageUrl',
+                  width: double.infinity,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                name,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left:20.0),
+            child: Align(alignment: Alignment.centerLeft, child: Text(merchantName)),
+          ),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Text(
+                  "\$$price",
+                  style: GoogleFonts.geologica(color: Colors.green),
+                ),
+              ),
+              Container(
+                width: 140,
+                margin: EdgeInsets.only(right: 12),
+                padding: EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF22c45e), Color(0XFF16a44a)],
+                  ),
+                ),
+                child: Text(
+                  "Add to cart",
+                  style: GoogleFonts.geologica(color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
