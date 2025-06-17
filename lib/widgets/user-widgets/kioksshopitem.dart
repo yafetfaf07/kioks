@@ -83,20 +83,25 @@ class KioksShopItem extends StatelessWidget {
                   style: GoogleFonts.geologica(color: Colors.green),
                 ),
               ),
-              Container(
-                width: 140,
-                margin: EdgeInsets.only(right: 12),
-                padding: EdgeInsets.all(7),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF22c45e), Color(0XFF16a44a)],
+              GestureDetector(
+                onTap: () {
+                  providers();
+                },
+                child: Container(
+                  width: 140,
+                  margin: EdgeInsets.only(right: 12),
+                  padding: EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF22c45e), Color(0XFF16a44a)],
+                    ),
                   ),
-                ),
-                child: Text(
-                  "Add to cart",
-                  style: GoogleFonts.geologica(color: Colors.white),
-                  textAlign: TextAlign.center,
+                  child: Text(
+                    "Add to cart",
+                    style: GoogleFonts.geologica(color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             ],
