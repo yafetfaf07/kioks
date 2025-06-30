@@ -139,10 +139,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                 const SizedBox(height: 15),
                 Text(
                   'Create an Account',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 26,
-                  ),
+               
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),

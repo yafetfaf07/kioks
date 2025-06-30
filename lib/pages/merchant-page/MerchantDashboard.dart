@@ -19,29 +19,30 @@ class MerchantDashboard extends StatefulWidget {
 }
 
 class _MerchantDashboardState extends State<MerchantDashboard> {
-late File selectedFile;
+  late File selectedFile;
 
-// This is for picking files
-Future<void> pickFile() async {
-  FilePickerResult? result = await FilePicker.platform.pickFiles();
+  // This is for picking files
+  Future<void> pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-  if(result!=null && result.files.single.path!=null) {
-    setState(() {
-      selectedFile=File(result.files.single.path!);
-    });
+    if (result != null && result.files.single.path != null) {
+      setState(() {
+        selectedFile = File(result.files.single.path!);
+      });
+    }
   }
-}
 
-Future<void> uploadProduct() async {
-  // if(selectedFile==null) return;
-  final url = Uri.parse("http://localhost:5000/api/product/create/${widget.id}");
-  var request = http.MultipartRequest("POST", url);
-  final mimeType =
+  Future<void> uploadProduct() async {
+    // if(selectedFile==null) return;
+    final url = Uri.parse(
+      "http://localhost:5000/api/product/create/${widget.id}",
+    );
+    var request = http.MultipartRequest("POST", url);
+    final mimeType =
         lookupMimeType(selectedFile!.path) ?? 'application/octet-stream';
     final mimeParts = mimeType.split('/');
 
-
-     request.files.add(
+    request.files.add(
       await http.MultipartFile.fromPath(
         'file', // Change this if your API expects a different field name
         selectedFile!.path,
@@ -49,118 +50,142 @@ Future<void> uploadProduct() async {
       ),
     );
 
-      request.fields['name'] = name.text;
+    request.fields['name'] = name.text;
     request.fields['price'] = price.text;
     request.fields['category'] = category.text;
     request.fields['quantity'] = quantity.text;
-    request.fields['changedQuantity']=quantity.text;
-    
+    request.fields['changedQuantity'] = quantity.text;
+
     var response = await request.send();
 
-    if(response.statusCode==201) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Product Uploaded Successfully")));
+    if (response.statusCode == 201) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Product Uploaded Successfully")));
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("${response.statusCode}")));
     }
-      else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${response.statusCode}")));
-      }
-
-}
-
-
-List<Product> getProducts=[];
-Future<void> getAllProductsByMerchantId() async {
-  final url = Uri.parse("http://localhost:5000/api/product/getProductByMerchantId/${widget.id}");
-  final response = await http.get(url, headers: {"Content-Type":"application/json"});
-
-  if(response.statusCode==200) {
-    List<dynamic> productResponse = json.decode(response.body);
-    setState(() {
-      getProducts.clear();
-      getProducts=productResponse.map((d) => Product.fromJson(d)).toList();
-    });
   }
-  else {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error Response: ${response.body}")));
+
+  List<Product> getProducts = [];
+  Future<void> getAllProductsByMerchantId() async {
+    final url = Uri.parse(
+      "http://localhost:5000/api/product/getProductByMerchantId/${widget.id}",
+    );
+    final response = await http.get(
+      url,
+      headers: {"Content-Type": "application/json"},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> productResponse = json.decode(response.body);
+      setState(() {
+        getProducts.clear();
+        getProducts = productResponse.map((d) => Product.fromJson(d)).toList();
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error Response: ${response.body}")),
+      );
+    }
   }
-}
+
+  Future<void> getSearchResults() async {
+    final url = Uri.parse(
+      "http://localhost:5000/api/product//getProductByName/${widget.id}/${search.text}",
+    );
+    final response = await http.get(
+      url,
+      headers: {"Content-Type": "application/json"},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> productResponse = json.decode(response.body);
+      setState(() {
+        getProducts.clear();
+        getProducts = productResponse.map((d) => Product.fromJson(d)).toList();
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error Response: ${response.body}")),
+      );
+    }
+  }
+
   TextEditingController name = TextEditingController();
-    TextEditingController price = TextEditingController();
+  TextEditingController price = TextEditingController();
   TextEditingController category = TextEditingController();
   TextEditingController quantity = TextEditingController();
+  TextEditingController search = TextEditingController();
 
-void showDialogs(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text("Add New Product"),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,  // Important to avoid infinite height
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Upload a new to your inventory. Fill in all the required details"),
-              SizedBox(height: 8),
-              Text("Product Name"),
-              TextField(
-                controller: name,
-              ),
-              SizedBox(height: 8),
-              Text("Category"),
-              TextField(
-                controller: category,
-              ),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Price (\$) "),
-                        TextField(
-                          controller: price,
-                        ),
-                      ],
+  void showDialogs(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Add New Product"),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize:
+                  MainAxisSize.min, // Important to avoid infinite height
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Upload a new to your inventory. Fill in all the required details",
+                ),
+                SizedBox(height: 8),
+                Text("Product Name"),
+                TextField(controller: name),
+                SizedBox(height: 8),
+                Text("Category"),
+                TextField(controller: category),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Price (\$) "),
+                          TextField(controller: price),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Quantity"),
-                        TextField(
-                          controller: quantity,
-                        ),
-                      ],
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Quantity"),
+                          TextField(controller: quantity),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  pickFile();
-                },
-                child: Text("Upload Product Image"),
-              ),
-              SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () {
-                  uploadProduct();
-                },
-                child: Text("Add Product"),
-              ),
-            ],
+                  ],
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    pickFile();
+                  },
+                  child: Text("Upload Product Image"),
+                ),
+                SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    uploadProduct();
+                  },
+                  child: Text("Add Product"),
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
-
-
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -172,11 +197,13 @@ void showDialogs(BuildContext context) {
 
   @override
   Widget build(BuildContext context) {
-    int totalSold=0;
-    int totalRevenue=0;
-    for(int i=0; i<getProducts.length; i++) {
-      totalSold+=(getProducts[i].quantity-getProducts[i].changedQuantity);
-      totalRevenue+=(getProducts[i].quantity-getProducts[i].changedQuantity) * getProducts[i].price;
+    int totalSold = 0;
+    int totalRevenue = 0;
+    for (int i = 0; i < getProducts.length; i++) {
+      totalSold += (getProducts[i].quantity - getProducts[i].changedQuantity);
+      totalRevenue +=
+          (getProducts[i].quantity - getProducts[i].changedQuantity) *
+          getProducts[i].price;
     }
     return Scaffold(
       backgroundColor: Colors.grey[200],
@@ -211,7 +238,7 @@ void showDialogs(BuildContext context) {
                     8.0,
                   ), // Padding around the stat cards row
                   child: Row(
-                    children:  [
+                    children: [
                       MerchantCard(
                         title: 'Total Products',
                         value: '${getProducts.length}',
@@ -232,7 +259,7 @@ void showDialogs(BuildContext context) {
                     8.0,
                   ), // Padding around the stat cards row
                   child: Row(
-                    children:  [
+                    children: [
                       MerchantCard(
                         title: 'Total Revenue',
                         value: '\$ $totalRevenue',
@@ -294,20 +321,26 @@ void showDialogs(BuildContext context) {
                             SizedBox(
                               width: 400,
                               child: TextField(
+                                controller: search,
                                 decoration: InputDecoration(
                                   hintText: 'Search products...',
                                   hintStyle: TextStyle(color: Colors.grey[600]),
-                                  prefixIcon: Icon(
-                                    Icons.search,
-                                    color: Colors.grey[600],
-                                  ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   contentPadding: EdgeInsets.symmetric(
                                     vertical: 0,
                                     horizontal: 10,
-                                  ), // Adjust padding
+                                  ),
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      getSearchResults();
+                                    },
+                                    child: Icon(
+                                      Icons.search,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
                                 ),
                                 style: TextStyle(color: Colors.black),
                               ),
@@ -385,32 +418,38 @@ void showDialogs(BuildContext context) {
                           ],
                         ),
                       ),
-                      getProducts.length>0 ?
-                      GridView.builder(
-                        padding: const EdgeInsets.all(16.0),
-                        itemCount: getProducts.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16.0,
-                          mainAxisSpacing: 16.0,
-                          childAspectRatio: 1,
-                        ),
-                        itemBuilder: (context, index) {
-                          int revenue =  (getProducts[index].quantity-getProducts[index].changedQuantity) *getProducts[index].price;
-                          return ProductCard(
-                            id:getProducts[index].id,
-                            changedQuantity:getProducts[index].changedQuantity,
-                            totalRevenue: revenue,
-                            imageUrl: getProducts[index].imageUrl,
-                            name: getProducts[index].name,
-                            category: getProducts[index].category,
-                            price:getProducts[index].price,
-                            quantity:getProducts[index].quantity,
-                          );
-                        },
-                      ): Text("No Products found"),
+                      getProducts.length > 0
+                          ? GridView.builder(
+                            padding: const EdgeInsets.all(16.0),
+                            itemCount: getProducts.length,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 16.0,
+                                  mainAxisSpacing: 16.0,
+                                  childAspectRatio: 1,
+                                ),
+                            itemBuilder: (context, index) {
+                              int revenue =
+                                  (getProducts[index].quantity -
+                                      getProducts[index].changedQuantity) *
+                                  getProducts[index].price;
+                              return ProductCard(
+                                id: getProducts[index].id,
+                                changedQuantity:
+                                    getProducts[index].changedQuantity,
+                                totalRevenue: revenue,
+                                imageUrl: getProducts[index].imageUrl,
+                                name: getProducts[index].name,
+                                category: getProducts[index].category,
+                                price: getProducts[index].price,
+                                quantity: getProducts[index].quantity,
+                              );
+                            },
+                          )
+                          : Text("No Products found"),
                     ],
                   ),
                 ),

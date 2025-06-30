@@ -14,6 +14,7 @@ class BottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.shade200, width: 3),
@@ -25,9 +26,9 @@ class BottomNavigation extends StatelessWidget {
       child: GNav(
         selectedIndex: selectedIndex, // ✅ this is important
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        activeColor: Colors.green[800],
-        tabActiveBorder: Border.all(color: Colors.white),
-        tabBackgroundColor: Colors.green.shade50,
+        activeColor: const Color.fromARGB(255, 71, 219, 78),
+        tabActiveBorder: Border.all(color: Colors.white),  
+        tabBackgroundColor: Colors.green.shade200,
         tabBorderRadius: 15,
         onTabChange: onChange,
         gap: 8,

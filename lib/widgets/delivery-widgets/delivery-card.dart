@@ -10,7 +10,7 @@ class Deliverycard extends StatelessWidget {
   void _launchSearch() async {
     const query = "Flutter desktop app tutorial";
     String urls =
-        "https://www.google.com/maps/dir/?api=1&origin=${data["user"]['latitude']},${data['user']['longitude']}&destination=9.0192538,38.7661311&travelmode=driving";
+        "https://www.google.com/maps/dir/?api=1&origin=9.0192756,38.7643211${data['user']['longitude']}&destination=9.0192538,38.7661311&travelmode=driving";
 
     final url = Uri.parse(urls);
 

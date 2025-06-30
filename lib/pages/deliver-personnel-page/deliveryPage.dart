@@ -18,7 +18,7 @@ class _DeliverypageState extends State<Deliverypage> {
 
   Future<void> getOrders() async {
     final url = Uri.parse(
-      "http://localhost:5000/api/order/getOrderByDeliverId/68430cf6fb8f85b000da31b8",
+      "http://localhost:5000/api/order/getOrderByDeliverId/${widget.id}",
     );
 
     final response = await http.get(
