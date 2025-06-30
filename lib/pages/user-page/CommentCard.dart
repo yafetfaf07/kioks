@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CommentsCard extends StatelessWidget {
-  final review;
-  const CommentsCard({super.key, required this.review});
+  final String comment;
+  final int rating;
+  const CommentsCard({super.key, required this.comment, required this.rating});
 
   @override
   Widget build(BuildContext context) {
@@ -23,30 +24,16 @@ class CommentsCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(review['content'], style: GoogleFonts.poppins(fontWeight: FontWeight.bold),),
-                  // Row(
-                  //   children: List.generate(5, (index) {
-                  //     return Icon(
-                  //       index == 0 ? Icons.star : Icons.star_border,
-                  //       color: Colors.orange,
-                  //       size: 18,
-                  //     );
-                  //   }),
-                  // ),
-                  // if (review.comment.isNotEmpty)
-                  //   Padding(
-                  //     padding: const EdgeInsets.only(top: 4.0),
-                  //     child: Text(
-                  //       review.comment,
-                  //       style: TextStyle(color: Colors.grey),
-                  //     ),
-                  //   ),
-                    // if no comment is provided
-                  if (review['content']==null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text("No comment", style: TextStyle(color: Colors.grey)),
-                    ),
+                  Text(comment, style: GoogleFonts.poppins(fontWeight: FontWeight.bold),),
+                  Row(
+                    children: List.generate(rating, (index) {
+                      return Icon(
+                        Icons.star,
+                        color: Colors.orange,
+                        size: 18,
+                      );
+                    }),
+                  ),
                 ],
               ),),
           ],

@@ -18,16 +18,16 @@ class BottomNavigation extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.shade200, width: 3),
         boxShadow: [
-          BoxShadow(color: Colors.grey.shade50, spreadRadius: 7, blurRadius: 6)
+          BoxShadow(color: Colors.grey.shade50, spreadRadius: 4, blurRadius: 6)
         ]
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      // padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: GNav(
         selectedIndex: selectedIndex, // ✅ this is important
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        activeColor: Colors.green[800],
+        activeColor: const Color.fromARGB(255, 21, 103, 24),
         tabActiveBorder: Border.all(color: Colors.white),
-        tabBackgroundColor: Colors.green.shade50,
+        tabBackgroundColor: const Color.fromARGB(255, 227, 255, 229),
         tabBorderRadius: 15,
         onTabChange: onChange,
         gap: 8,

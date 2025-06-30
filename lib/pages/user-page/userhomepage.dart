@@ -47,6 +47,7 @@ class _UserHomepageState extends State<UserHomepage> {
       });
     }
   }
+  
 
   // Search merchants by name
   Future<void> getMerchantByName() async {
@@ -95,6 +96,9 @@ class _UserHomepageState extends State<UserHomepage> {
               ),
             ),
             const SizedBox(height: 10),
+            IconButton(onPressed: () {
+              Navigator.of(context).pop();
+            }, icon: Icon(Icons.chevron_left)),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Center(
@@ -162,12 +166,16 @@ class _UserHomepageState extends State<UserHomepage> {
                       scrollDirection: Axis.horizontal,
                       itemCount: getMerchantData.length,
                       itemBuilder: (BuildContext context, int index) {
-                        String rating = getMerchantData[index]['overallRating']?.toString() ?? "No rating";
-                        return KioksCard(
-                          id: getMerchantData[index]['_id'],
-                          name: getMerchantData[index]['firstname'],
-                          rating: rating,
-                        );
+                        if (getMerchantData.length==0) {
+                          return Center(child: const Text("No shops around you", style: TextStyle(fontSize: 50, color: Colors.black),));
+                        } else {
+                          String rating = getMerchantData[index]['overallRating']?.toString() ?? "No rating";
+                          return KioksCard(
+                            id: getMerchantData[index]['_id'],
+                            name: getMerchantData[index]['firstname'],
+                            rating: rating,
+                          );
+                        }
                       },
                     ),
                   ),

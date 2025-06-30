@@ -51,8 +51,8 @@ Future<void> uploadProduct() async {
 
       request.fields['name'] = name.text;
     request.fields['price'] = price.text;
-    request.fields['category'] = category.text;
-    request.fields['quantity'] = quantity.text;
+    request.fields['category'] = optionCategory;
+    request.fields['quantity'] = "0";
     request.fields['changedQuantity']=quantity.text;
     
     var response = await request.send();
@@ -68,6 +68,8 @@ Future<void> uploadProduct() async {
 
 
 List<Product> getProducts=[];
+
+// Gets all products
 Future<void> getAllProductsByMerchantId() async {
   final url = Uri.parse("http://localhost:5000/api/product/getProductByMerchantId/${widget.id}");
   final response = await http.get(url, headers: {"Content-Type":"application/json"});
@@ -83,15 +85,31 @@ Future<void> getAllProductsByMerchantId() async {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error Response: ${response.body}")));
   }
 }
+// Find Product By name
+Future<void> getProductByName() async {
+  final url = Uri.parse("http://localhost:5000/api/product/getProductByName/${widget.id}/${search.text}");
+  final response = await http.get(url, headers: {"Content-Type":'application/json'});
+  if(response.statusCode==200) {
+    List<dynamic> productResponse = json.decode(response.body);
+    setState(() {
+      getProducts.clear();
+      getProducts=productResponse.map((d) => Product.fromJson(d)).toList();
+    });
+  }
+}
+
+  String optionCategory="";
   TextEditingController name = TextEditingController();
     TextEditingController price = TextEditingController();
   TextEditingController category = TextEditingController();
   TextEditingController quantity = TextEditingController();
+  TextEditingController search = TextEditingController();
 
 void showDialogs(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
+      List<String> options = ['Supermarket', 'Mini-market', 'Market'];
       return AlertDialog(
         title: Text("Add New Product"),
         content: SingleChildScrollView(
@@ -107,9 +125,16 @@ void showDialogs(BuildContext context) {
               ),
               SizedBox(height: 8),
               Text("Category"),
-              TextField(
-                controller: category,
-              ),
+              DropdownButton(items:options.map((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(), onChanged: (String? newValue) {
+            setState(() {
+              optionCategory = newValue!;
+            });
+          },),
               SizedBox(height: 8),
               Row(
                 children: [
@@ -175,12 +200,13 @@ void showDialogs(BuildContext context) {
     int totalSold=0;
     int totalRevenue=0;
     for(int i=0; i<getProducts.length; i++) {
-      totalSold+=(getProducts[i].quantity-getProducts[i].changedQuantity);
-      totalRevenue+=(getProducts[i].quantity-getProducts[i].changedQuantity) * getProducts[i].price;
+      totalSold+=(getProducts[i].quantity);
+      totalRevenue+=(getProducts[i].quantity) * getProducts[i].price;
     }
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
+
         elevation: 2,
         backgroundColor: Colors.white,
         title: Text(
@@ -215,13 +241,11 @@ void showDialogs(BuildContext context) {
                       MerchantCard(
                         title: 'Total Products',
                         value: '${getProducts.length}',
-                        trend: '0 low stock items',
                         icon: Icons.inventory_2_outlined,
                       ),
                       MerchantCard(
                         title: 'Total Sold',
                         value: '$totalSold',
-                        trend: '+12% from last month',
                         icon: Icons.shopping_cart_outlined,
                       ),
                     ],
@@ -236,7 +260,6 @@ void showDialogs(BuildContext context) {
                       MerchantCard(
                         title: 'Total Revenue',
                         value: '\$ $totalRevenue',
-                        trend: '+8% from last month',
                         icon: Icons.attach_money,
                       ),
                       // MerchantCard(
@@ -294,12 +317,18 @@ void showDialogs(BuildContext context) {
                             SizedBox(
                               width: 400,
                               child: TextField(
+                                controller: search,
                                 decoration: InputDecoration(
                                   hintText: 'Search products...',
                                   hintStyle: TextStyle(color: Colors.grey[600]),
-                                  prefixIcon: Icon(
-                                    Icons.search,
-                                    color: Colors.grey[600],
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      getProductByName();
+                                    },
+                                    child: Icon(
+                                      Icons.search,
+                                      color: Colors.grey[600],
+                                    ),
                                   ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8.0),
@@ -312,6 +341,10 @@ void showDialogs(BuildContext context) {
                                 style: TextStyle(color: Colors.black),
                               ),
                             ),
+                            IconButton(onPressed: () {
+                                    getAllProductsByMerchantId(); // getLocationFromIP();
+
+                            }, icon: Icon(Icons.replay_outlined)),
                             Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12.0),
@@ -385,7 +418,7 @@ void showDialogs(BuildContext context) {
                           ],
                         ),
                       ),
-                      getProducts.length>0 ?
+                      getProducts.isNotEmpty ?
                       GridView.builder(
                         padding: const EdgeInsets.all(16.0),
                         itemCount: getProducts.length,

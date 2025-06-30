@@ -32,7 +32,7 @@ class deliverProductCard extends StatelessWidget {
                   children: [
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Text("${data["name"]}"),
+                      child: Text("${data["name"]}", style: TextStyle(fontWeight: FontWeight.w500),),
                     ),
                     Align(
                       alignment: Alignment.centerLeft,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_project/models/Rating.dart';
 import 'package:flutter_project/pages/user-page/CommentCard.dart';
 import 'package:google_fonts/google_fonts.dart';
 import "package:http/http.dart" as http;
@@ -14,7 +15,7 @@ class UserReviewPage extends StatefulWidget {
 }
 
 class _UserReviewPageState extends State<UserReviewPage> {
-  List<dynamic> comments = [];
+  List<Rating> comments = [];
  Future<void> getComments() async {
   final url = Uri.parse('http://localhost:5000/api/comments/load/${widget.id}');
   final response = await http.get(url, headers: {"Content-Type":"application/json"});
@@ -23,7 +24,7 @@ class _UserReviewPageState extends State<UserReviewPage> {
       List<dynamic> commentResponse = json.decode(response.body);
       setState(() {
         comments.clear();
-        comments.addAll(commentResponse);
+        comments=commentResponse.map((r) => Rating.fromJson(r)).toList();
       });
   }
  }
@@ -47,11 +48,14 @@ getComments();
         backgroundColor: Colors.white,
       ),
       body: SafeArea(
-        child:  ListView.builder(
+        
+        child:
+        comments.isNotEmpty ?
+          ListView.builder(
         itemCount: comments.length,
         itemBuilder: (context, index) {
-          return CommentsCard(review: comments[index]);
-        }),
+          return CommentsCard(comment:comments[index].content, rating:comments[index].rating);
+        }): Center(child: Text("No Comments yet!!", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),)),
       ),
     );
   }

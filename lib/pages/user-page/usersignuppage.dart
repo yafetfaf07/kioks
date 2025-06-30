@@ -35,20 +35,21 @@ class _UserSignUppageState extends State<UserSignUppage> {
       return;
     }
 
-    final response = await http.get(Uri.parse('http://ip-api.com/json/'));
-    if (response.statusCode != 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.red,
-          content: Text("Failed to fetch location data"),
-        ),
-      );
-      return;
-    }
+    // final response = await http.get(Uri.parse('http://ip-api.com/json/'));
+    // if (response.statusCode != 200) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       backgroundColor: Colors.red,
+    //       content: Text("Failed to fetch location data"),
+    //     ),
+    //   );
+    //   return;
+    // }
 
-    final data = jsonDecode(response.body);
-    final latitude = data['lat'];
-    final longitude = data['lon'];
+    // final data = jsonDecode(response.body);
+    // final latitude = data['lat'];
+    // final longitude = data['lon'];
+    print("Are you working thou");
 
     String urlString = "";
     if (isUser) {
@@ -73,7 +74,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
       "lastname": _lastnametext.text,
       "phone_no": _phonenumber.text,
       'password': _signupPasswordtext.text,
-      "address": {"latitude": latitude, "longitude": longitude},
+      "address": {"latitude": 9.0543, "longitude": 38.095},
     };
 
     try {
@@ -89,9 +90,9 @@ class _UserSignUppageState extends State<UserSignUppage> {
             content: Text("Sign up successful"),
           ),
         );
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (builder) => UserLoginpage()),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (builder) => UserLoginpage()));
       } else if (responses.statusCode == 409) {
         var errorMessage = jsonDecode(responses.body);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -110,10 +111,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content: Text('Error: $e'),
-        ),
+        SnackBar(backgroundColor: Colors.red, content: Text('Error: $e')),
       );
     }
   }
@@ -177,7 +175,8 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           width: MediaQuery.of(context).size.width * 0.3,
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: isDeliver ? Colors.white : Colors.grey.shade200,
+                            color:
+                                isDeliver ? Colors.white : Colors.grey.shade200,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
@@ -196,7 +195,10 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           width: MediaQuery.of(context).size.width * 0.3,
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: isMerchant ? Colors.white : Colors.grey.shade200,
+                            color:
+                                isMerchant
+                                    ? Colors.white
+                                    : Colors.grey.shade200,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
@@ -234,6 +236,9 @@ class _UserSignUppageState extends State<UserSignUppage> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your first name';
+                          }
+                          if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
+                            return 'Please enter a valid last name (only letters and spaces)';
                           }
                           return null;
                         },
@@ -284,6 +289,9 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your last name';
                           }
+                          if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
+                            return 'Please enter a valid last name (only letters and spaces)';
+                          }
                           return null;
                         },
                         decoration: InputDecoration(
@@ -333,7 +341,10 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your phone number';
                           }
-                         
+
+                          if (!RegExp(r'^(09|\+2519)\d{8}$').hasMatch(value)) {
+                            return 'Please enter a valid Ethiopian phone number (e.g., 09XXXXXXXX or +2519XXXXXXXX)';
+                          }
                           return null;
                         },
                         decoration: InputDecoration(
@@ -379,16 +390,26 @@ class _UserSignUppageState extends State<UserSignUppage> {
                       ),
                       TextFormField(
                         controller: _signupPasswordtext,
-                        validator: (value) {
+                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter a password';
+                            return 'Please enter your password';
                           }
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
+                          if (value.length < 8) {
+                            return 'Password must be at least 8 characters long';
+                          }
+                          if (!value.contains(RegExp(r'[A-Z]'))) {
+                            return 'Password must contain at least one uppercase letter';
+                          }
+                          if (!value.contains(RegExp(r'[a-z]'))) {
+                            return 'Password must contain at least one lowercase letter';
+                          }
+                          if (!value.contains(RegExp(r'[0-9]'))) {
+                            return 'Password must contain at least one digit';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
+                          suffixIcon: Icon(Icons.visibility),
                           contentPadding: const EdgeInsets.symmetric(
                             vertical: 18,
                             horizontal: 15,
@@ -420,6 +441,7 @@ class _UserSignUppageState extends State<UserSignUppage> {
                           fillColor: Colors.white,
                         ),
                         obscureText: true,
+                        
                       ),
                       const SizedBox(height: 15),
                       Row(

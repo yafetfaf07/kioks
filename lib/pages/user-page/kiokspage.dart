@@ -12,8 +12,9 @@ import 'package:provider/provider.dart';
 class KioksPage extends StatefulWidget {
   final String id;
   final String name;
+  final String rating;
 
-  const KioksPage({super.key, required this.id, required this.name});
+  const KioksPage({super.key, required this.id, required this.name, required this.rating});
 
   @override
   State<KioksPage> createState() => _KioksPageState();
@@ -112,14 +113,7 @@ class _KioksPageState extends State<KioksPage> {
                                   child: const Icon(Icons.chevron_left),
                                 ),
                               ),
-                              Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                                child: const Icon(Icons.search),
-                              ),
+                            
                             ],
                           ),
                           const SizedBox(height: 140),
@@ -145,7 +139,7 @@ class _KioksPageState extends State<KioksPage> {
                               children: [
                                 GestureDetector(onTap: () {
                                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserReviewPage(id:widget.id)));
-                                },child: _buildInfoColumn("Rating", Icons.star_outline, "5.0")),
+                                },child: _buildInfoColumn("Rating", Icons.star_outline, widget.rating)),
                                 _buildInfoColumn("Working Hours", Icons.access_time, "08:30 - 21:50"),
                                 _buildInfoColumn("Delivery Time", Icons.motorcycle, "43 min"),
                               ],
@@ -170,24 +164,39 @@ class _KioksPageState extends State<KioksPage> {
                   // padding: const EdgeInsets.only(top: 10),
                
                   
-                  itemBuilder: (BuildContext context, int index) {
-                    Product p = getProduct[index];
-                    void addProducts() {
-                      cartProvider.addProduct(p);
-                    }
-                
-                    return KioksShopItem(
-                      merchantName:widget.name,
-                      changedQuantity: p.changedQuantity,
-                      id: p.id,
-                      name: p.name,
-                      category: p.category,
-                      price: p.price,
-                      quantity: p.quantity,
-                      imageUrl: p.imageUrl,
-                      providers: addProducts,
-                    );
-                  },
+               // ✅ KioksPage (update this part in ListView.builder)
+itemBuilder: (BuildContext context, int index) {
+  Product p = getProduct[index];
+  bool isInCart = cartProvider.isInCart(p.id);
+
+  void toggleCart() {
+    if (isInCart) {
+      cartProvider.removeProduct(p);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${p.name} removed from cart.')),
+      );
+    } else {
+      cartProvider.addProduct(p);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${p.name} added to cart.')),
+      );
+    }
+    setState(() {});
+  }
+
+  return KioksShopItem(
+    merchantName: widget.name,
+    changedQuantity: p.changedQuantity,
+    id: p.id,
+    name: p.name,
+    category: p.category,
+    price: p.price,
+    quantity: p.quantity,
+    imageUrl: p.imageUrl,
+    providers: toggleCart,
+    isInCart: isInCart,
+  );
+}
                 ),
               ),
             ),

@@ -19,7 +19,7 @@ class KioksCard extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (builder) => KioksPage(id: id, name: name, ),
+            builder: (builder) => KioksPage(id: id, name: name, rating:rating),
           ),
         );
       },

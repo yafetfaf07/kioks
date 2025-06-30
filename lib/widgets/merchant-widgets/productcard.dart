@@ -39,7 +39,6 @@ Future<void> updateProduct() async {
   final url = Uri.parse("http://localhost:5000/api/product/updateProduct/${widget.id}");
 final response = await http.patch(url, headers: {"Content-Type":"application/json"}, body: jsonEncode({
   "name":nameController.text,
-  "quantity":quantityController.text,
   "changedQuantity":quantityController.text
 }));
 if(response.statusCode==200) {
@@ -89,6 +88,7 @@ void showUpdateDialog(BuildContext context) {
 
   @override
   Widget build(BuildContext context) {
+    int revenue = widget.quantity * widget.price;
     return Container(
       margin: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -214,7 +214,7 @@ void showUpdateDialog(BuildContext context) {
                         ),
                       ),
                       Text(
-                        'Qty: ${widget.changedQuantity}',
+                        'Remaining: ${widget.changedQuantity}',
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                     ],
@@ -226,11 +226,11 @@ void showUpdateDialog(BuildContext context) {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Sold: ${widget.quantity - widget.changedQuantity}',
+                        'Sold: ${widget.quantity}',
                         style: TextStyle(fontSize: 14, color: Colors.black),
                       ),
                       Text(
-                        '\$${widget.totalRevenue.toStringAsFixed(2)}',
+                        '\$${revenue.toStringAsFixed(2)}',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,

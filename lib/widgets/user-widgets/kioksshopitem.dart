@@ -1,3 +1,4 @@
+// ✅ KioksShopItem (update this file)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -11,6 +12,7 @@ class KioksShopItem extends StatelessWidget {
   final int quantity;
   final int changedQuantity;
   final VoidCallback providers;
+  final bool isInCart;
 
   const KioksShopItem({
     super.key,
@@ -23,6 +25,7 @@ class KioksShopItem extends StatelessWidget {
     required this.category,
     required this.price,
     required this.quantity,
+    required this.isInCart,
   });
 
   @override
@@ -49,7 +52,6 @@ class KioksShopItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               child: AspectRatio(
                 aspectRatio: 4 / 3,
-
                 child: Image.network(
                   'http://localhost:5000/$imageUrl',
                   width: double.infinity,
@@ -69,10 +71,12 @@ class KioksShopItem extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left:20.0),
-            child: Align(alignment: Alignment.centerLeft, child: Text(merchantName)),
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(merchantName),
+            ),
           ),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -84,9 +88,7 @@ class KioksShopItem extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  providers();
-                },
+                onTap: providers,
                 child: Container(
                   width: 140,
                   margin: EdgeInsets.only(right: 12),
@@ -94,11 +96,11 @@ class KioksShopItem extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     gradient: LinearGradient(
-                      colors: [Color(0xFF22c45e), Color(0XFF16a44a)],
+                      colors: !isInCart ? [Color(0xFF22c45e), Color(0XFF16a44a)] : [const Color.fromARGB(255, 236, 126, 118), const Color.fromARGB(255, 110, 35, 29)],
                     ),
                   ),
                   child: Text(
-                    "Add to cart",
+                    isInCart ? "Remove from cart" : "Add to cart",
                     style: GoogleFonts.geologica(color: Colors.white),
                     textAlign: TextAlign.center,
                   ),

@@ -6,13 +6,18 @@ class CartProvider extends ChangeNotifier {
 
   List<Product> get items => _items;
 
-  void addProduct(Product p) {
-    _items.add(p);
-    notifyListeners();
+  bool addProduct(Product p) {
+    final exists = _items.any((item) => item.id == p.id);
+    if (!exists) {
+      _items.add(p);
+      notifyListeners();
+      return true;
+    }
+    return false;
   }
 
   void removeProduct(Product p) {
-    _items.remove(p);
+    _items.removeWhere((item) => item.id == p.id);
     notifyListeners();
   }
 
@@ -35,5 +40,9 @@ class CartProvider extends ChangeNotifier {
       total += item.price * item.quantity;
     }
     return total;
+  }
+
+  bool isInCart(String id) {
+    return _items.any((item) => item.id == id);
   }
 }

@@ -5,7 +5,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class Deliverycard extends StatelessWidget {
   final data;
-  const Deliverycard({super.key, required this.data});
+  final num;
+  const Deliverycard({super.key, required this.data, required this.num});
 
   void _launchSearch() async {
     const query = "Flutter desktop app tutorial";
@@ -39,7 +40,7 @@ class Deliverycard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Order #${data['_id']}",
+                "Order #$num",
                 style: GoogleFonts.geologica(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -150,17 +151,41 @@ class Deliverycard extends StatelessWidget {
                 ],
               ),
               Row(
-                spacing: 5,
+                spacing: 15,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text("Call Customer"),
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      "Call Customer",
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _launchSearch();
-                    },
-                    child: Text("View Map"),
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      "View Map",
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                    color: Colors.green,
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      "Mark as Delivered",
+                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+                    ),
                   ),
                 ],
               ),
