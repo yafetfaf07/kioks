@@ -1,1 +1,0 @@
- /home/yafetyosef/StudioProjects/new_kioks/kioks/.dart_tool/flutter_build/0bdf5f1a0bb6f1bccd399075404927d4/native_assets.json: 
