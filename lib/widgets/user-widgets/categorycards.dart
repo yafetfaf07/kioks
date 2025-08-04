@@ -9,128 +9,24 @@ class CategoryCards extends StatelessWidget {
       padding: const EdgeInsets.only(left: 10),
       child: SizedBox(
         height: 100,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
+
+        child: Column(
           children: [
-            Column(
-              children: [
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 10, color: Colors.green.shade100),
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    color: Colors.green.shade100,
-                  ),
-                  child: Image.asset(
-                    'assets/categoriesimage/vegetables.png',
-                    width: double.infinity,
-                    height: double.infinity,
-                  ),
-                ),
-                Text('Category'),
-              ],
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                border: Border.all(width: 10, color: Colors.green.shade100),
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                color: Colors.green.shade100,
+              ),
+              child: Image.asset(
+                'assets/categoriesimage/vegetables.png',
+                width: double.infinity,
+                height: double.infinity,
+              ),
             ),
-            const SizedBox(width: 10,),
-            Column(
-              children: [
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 10, color: Colors.green.shade100),
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    color: Colors.green.shade100,
-                  ),
-                  child: Image.asset(
-                    'assets/categoriesimage/fruits.png',
-                    width: double.infinity,
-                    height: double.infinity,
-                  ),
-                ),
-                Text('Category'),
-              ],
-            ),
-             const SizedBox(width: 10,),
-            Column(
-              children: [
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 10, color: Colors.green.shade100),
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    color: Colors.green.shade100,
-                  ),
-                  child: Image.asset(
-                    'assets/categoriesimage/fruits.png',
-                    width: double.infinity,
-                    height: double.infinity,
-                  ),
-                ),
-                Text('Category'),
-              ],
-            ),
-             const SizedBox(width: 10,),
-            Column(
-              children: [
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 10, color: Colors.green.shade100),
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    color: Colors.green.shade100,
-                  ),
-                  child: Image.asset(
-                    'assets/categoriesimage/fruits.png',
-                    width: double.infinity,
-                    height: double.infinity,
-                  ),
-                ),
-                Text('Category'),
-              ],
-            ),
-             const SizedBox(width: 10,),
-            Column(
-              children: [
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 10, color: Colors.green.shade100),
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    color: Colors.green.shade100,
-                  ),
-                  child: Image.asset(
-                    'assets/categoriesimage/fruits.png',
-                    width: double.infinity,
-                    height: double.infinity,
-                  ),
-                ),
-                Text('Category'),
-              ],
-            ),
-             const SizedBox(width: 10,),
-            Column(
-              children: [
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 10, color: Colors.green.shade100),
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    color: Colors.green.shade100,
-                  ),
-                  child: Image.asset(
-                    'assets/categoriesimage/fruits.png',
-                    width: double.infinity,
-                    height: double.infinity,
-                  ),
-                ),
-                Text('Category'),
-              ],
-            ),
+            Text('Category'),
           ],
         ),
       ),

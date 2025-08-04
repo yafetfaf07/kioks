@@ -49,7 +49,6 @@ class _UserSignUppageState extends State<UserSignUppage> {
     // final data = jsonDecode(response.body);
     // final latitude = data['lat'];
     // final longitude = data['lon'];
-    print("Are you working thou");
 
     String urlString = "";
     if (isUser) {

@@ -34,9 +34,10 @@ class _UserHomepageState extends State<UserHomepage> {
   // Get list of merchant cards
   Future<void> getAllMerchants(String merchants) async {
     var merchantUrl = Uri.parse(merchants);
-    final response = await http.get(merchantUrl, headers: {
-      "Content-Type": "application/json",
-    });
+    final response = await http.get(
+      merchantUrl,
+      headers: {"Content-Type": "application/json"},
+    );
 
     if (response.statusCode == 200) {
       List<dynamic> merchantResponse = json.decode(response.body);
@@ -47,7 +48,6 @@ class _UserHomepageState extends State<UserHomepage> {
       });
     }
   }
-  
 
   // Search merchants by name
   Future<void> getMerchantByName() async {
@@ -72,10 +72,10 @@ class _UserHomepageState extends State<UserHomepage> {
 
   // Pages for bottom navigation
   List<Widget> get pages => [
-        _buildHomePage(),
-        CartPage(id: widget.id),
-        OrderHistoryPage(id: widget.id),
-      ];
+    _buildHomePage(),
+    CartPage(id: widget.id),
+    OrderHistoryPage(id: widget.id),
+  ];
 
   // Home Page UI (first page)
   Widget _buildHomePage() {
@@ -87,18 +87,35 @@ class _UserHomepageState extends State<UserHomepage> {
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.only(left: 15.0),
-              child: Text(
-                'Hello, There',
-                style: GoogleFonts.poppins(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Hello, There',
+                    style: GoogleFonts.poppins(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Icon(Icons.logout, color: Colors.white,),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 10),
-            IconButton(onPressed: () {
-              Navigator.of(context).pop();
-            }, icon: Icon(Icons.chevron_left)),
+            // IconButton(onPressed: () {
+            //   Navigator.of(context).pop();
+            // }, icon: Icon(Icons.chevron_left)),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Center(
@@ -127,25 +144,8 @@ class _UserHomepageState extends State<UserHomepage> {
               ),
             ),
             const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Text(
-                'Categories',
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
+
             const SizedBox(height: 10),
-            GestureDetector(
-              child: const CategoryCards(),
-              onTap: () {
-                getAllMerchants(
-                  "http://localhost:5000/api/product/getProductByCategory/Fruits",
-                );
-              },
-            ),
             const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.only(left: 10.0),
@@ -161,24 +161,32 @@ class _UserHomepageState extends State<UserHomepage> {
             isFetching
                 ? const CircularProgressIndicator()
                 : SizedBox(
-                    height: 300, // Set a fixed height for the horizontal ListView
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: getMerchantData.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (getMerchantData.length==0) {
-                          return Center(child: const Text("No shops around you", style: TextStyle(fontSize: 50, color: Colors.black),));
-                        } else {
-                          String rating = getMerchantData[index]['overallRating']?.toString() ?? "No rating";
-                          return KioksCard(
-                            id: getMerchantData[index]['_id'],
-                            name: getMerchantData[index]['firstname'],
-                            rating: rating,
-                          );
-                        }
-                      },
-                    ),
+                  height: 300, // Set a fixed height for the horizontal ListView
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: getMerchantData.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (getMerchantData.isEmpty) {
+                        return Center(
+                          child: const Text(
+                            "No shops around you",
+                            style: TextStyle(fontSize: 50, color: Colors.black),
+                          ),
+                        );
+                      } else {
+                        String rating =
+                            getMerchantData[index]['overallRating']
+                                ?.toString() ??
+                            "No rating";
+                        return KioksCard(
+                          id: getMerchantData[index]['_id'],
+                          name: getMerchantData[index]['firstname'],
+                          rating: rating,
+                        );
+                      }
+                    },
                   ),
+                ),
           ],
         ),
       ),
@@ -196,10 +204,7 @@ class _UserHomepageState extends State<UserHomepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
-      body: IndexedStack(
-        index: selectedIndex,
-        children: pages,
-      ),
+      body: IndexedStack(index: selectedIndex, children: pages),
       bottomNavigationBar: BottomNavigation(
         selectedIndex: selectedIndex,
         onChange: onChange,

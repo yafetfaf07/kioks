@@ -27,6 +27,8 @@ class _DeliverypageState extends State<Deliverypage> {
     );
 
     if (response.statusCode == 200) {
+
+      print(response.body);
       List<dynamic> orderResponse = json.decode(response.body);
       setState(() {
         getOrderData.clear(); // Clear previous data to avoid duplicates
