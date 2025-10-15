@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/pages/user-page/cartpage.dart';
 import 'package:flutter_project/pages/user-page/orderhistorypage.dart';
 import 'package:flutter_project/widgets/user-widgets/bottom_navigation.dart';
-import 'package:flutter_project/widgets/user-widgets/categorycards.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_project/widgets/user-widgets/kioks-card.dart';
 import "package:http/http.dart" as http;
